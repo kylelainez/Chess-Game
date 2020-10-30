@@ -43,22 +43,47 @@ const chessPieces = {
 	}
 };
 
+const backRow = [
+	'rook',
+	'knight',
+	'bishop',
+	'queen',
+	'king',
+	'bishop',
+	'knight',
+	'rook'
+];
+
 //* ------------------------------------- State Variables -------------------------------------
 let isChecked;
 let capturedPieces;
 let history;
-let currentLocation;
 let boardPieces;
 let chessBoard;
-let chessPiecesEl;
 
 //* ------------------------------------- DOM Elements -------------------------------------
 const chessBoardEl = document.querySelector('.chessBoard'); //Chess Board parent for multiple square containers
+const playAgainButton = document.querySelector('#play-again');
+const rotateBoardButton = document.querySelector('#rotate');
 
 //* ------------------------------------- Functions -------------------------------------
-const initializeChessBoard = () => {
+
+// Function for initializing State Variables
+const initializeVariables = () => {
 	chessBoard = [];
 	boardPieces = [];
+	isChecked = {
+		white: false,
+		black: false
+	};
+	history = {
+		from: [],
+		to: []
+	};
+};
+
+// Initialize the Chess Board and Render it
+const initializeChessBoard = () => {
 	for (let i = 0; i < 8; i++) {
 		chessBoard.push([]);
 		boardPieces.push([]);
@@ -73,17 +98,8 @@ const initializeChessBoard = () => {
 	}
 };
 
+// Initialize the Chess Pieces
 const initializeChessPieces = () => {
-	const backRow = [
-		'rook',
-		'knight',
-		'bishop',
-		'queen',
-		'king',
-		'bishop',
-		'knight',
-		'rook'
-	];
 	for (let team in chessPieces) {
 		const pawnIndex = team === 'white' ? 6 : 1;
 		const backIndex = team === 'white' ? 7 : 0;
@@ -92,21 +108,20 @@ const initializeChessPieces = () => {
 			piece.src = chessPieces[team].pawn.imgFile;
 			boardPieces[pawnIndex][i].type = 'pawn';
 			boardPieces[pawnIndex][i].side = team;
-			renderChessPieces(pawnIndex, i, piece);
+			renderChessPiece(pawnIndex, i, piece);
 
 			const backPiece = document.createElement('img');
 			backPiece.src = chessPieces[team][backRow[i]].imgFile;
 			boardPieces[backIndex][i].type = backRow[i];
 			boardPieces[backIndex][i].side = team;
-			renderChessPieces(backIndex, i, backPiece);
+			renderChessPiece(backIndex, i, backPiece);
 		}
 	}
 };
 
-const renderChessPieces = (firstIndex, secondIndex, element) => {
-	setTimeout(() => {
-		chessBoard[firstIndex][secondIndex].appendChild(element);
-	}, 50 * secondIndex);
+//Function to Render each Chess Pieces
+const renderChessPiece = (firstIndex, secondIndex, element) => {
+	chessBoard[firstIndex][secondIndex].appendChild(element);
 };
 
 const possibleMoves = (piece) => {
@@ -116,10 +131,6 @@ const possibleMoves = (piece) => {
 
 const captureEnemyPiece = (allyPiece, enemyPiece) => {
 	// TODO: Function for capturing enemy pieces
-};
-
-const renderDisplay = () => {
-	// TODO: Function to display any changes from the model to the DOM
 };
 
 const winLoseChecker = () => {
