@@ -3,16 +3,42 @@
 const chessPieces = {
 	white: {
 		pawn: {
-			pieces: 8,
-			imgFile: 'img/whitePawn.svg',
-			move: 'front, 1', //1 Step to front
-			eat: 'diagonal,1'
+			imgFile: 'img/whitePawn.svg'
+		},
+		rook: {
+			imgFile: 'img/whiteRook.svg'
+		},
+		knight: {
+			imgFile: 'img/whiteKnight.svg'
+		},
+		bishop: {
+			imgFile: 'img/whiteBishop.svg'
+		},
+		queen: {
+			imgFile: 'img/whiteQueen.svg'
+		},
+		king: {
+			imgFile: 'img/whiteKing.svg'
 		}
 	},
 	black: {
 		pawn: {
-			pieces: 8,
 			imgFile: 'img/blackPawn.svg'
+		},
+		rook: {
+			imgFile: 'img/blackRook.svg'
+		},
+		knight: {
+			imgFile: 'img/blackKnight.svg'
+		},
+		bishop: {
+			imgFile: 'img/blackBishop.svg'
+		},
+		queen: {
+			imgFile: 'img/blackQueen.svg'
+		},
+		king: {
+			imgFile: 'img/blackKing.svg'
 		}
 	}
 };
@@ -22,19 +48,65 @@ let isChecked;
 let capturedPieces;
 let history;
 let currentLocation;
+let boardPieces;
 let chessBoard;
-let chessPieces; // ! Chess Pieces should be duplicated according to the number of pieces required on the board
+let chessPiecesEl;
 
 //* ------------------------------------- DOM Elements -------------------------------------
-const chessBoardEl = document.querySelector('#chessBoard'); //Chess Board parent for multiple square containers
+const chessBoardEl = document.querySelector('.chessBoard'); //Chess Board parent for multiple square containers
 
 //* ------------------------------------- Functions -------------------------------------
 const initializeChessBoard = () => {
-	// TODO: Initialize an array of square containers to the dom and save it into the variable chessBoard and append it to the chessBoardEl
+	chessBoard = [];
+	boardPieces = [];
+	for (let i = 0; i < 8; i++) {
+		chessBoard.push([]);
+		boardPieces.push([]);
+		for (let j = 0; j < 8; j++) {
+			const piecesContainer = document.createElement('div');
+			piecesContainer.className = 'piecesContainer';
+			piecesContainer.classList.add((i + j) % 2 === 0 ? 'dark' : 'light');
+			chessBoard[i].push(piecesContainer);
+			boardPieces[i].push({});
+			chessBoardEl.appendChild(piecesContainer);
+		}
+	}
 };
 
 const initializeChessPieces = () => {
-	// TODO: Initialize Chess Pieces and append it to the correct position on the board
+	const backRow = [
+		'rook',
+		'knight',
+		'bishop',
+		'queen',
+		'king',
+		'bishop',
+		'knight',
+		'rook'
+	];
+	for (let team in chessPieces) {
+		const pawnIndex = team === 'white' ? 6 : 1;
+		const backIndex = team === 'white' ? 7 : 0;
+		for (let i = 0; i < 8; i++) {
+			const piece = document.createElement('img');
+			piece.src = chessPieces[team].pawn.imgFile;
+			boardPieces[pawnIndex][i].type = 'pawn';
+			boardPieces[pawnIndex][i].side = team;
+			renderChessPieces(pawnIndex, i, piece);
+
+			const backPiece = document.createElement('img');
+			backPiece.src = chessPieces[team][backRow[i]].imgFile;
+			boardPieces[backIndex][i].type = backRow[i];
+			boardPieces[backIndex][i].side = team;
+			renderChessPieces(backIndex, i, backPiece);
+		}
+	}
+};
+
+const renderChessPieces = (firstIndex, secondIndex, element) => {
+	setTimeout(() => {
+		chessBoard[firstIndex][secondIndex].appendChild(element);
+	}, 50 * secondIndex);
 };
 
 const possibleMoves = (piece) => {

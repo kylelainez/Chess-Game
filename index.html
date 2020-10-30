@@ -7,7 +7,27 @@
 		<script defer src="js/main.js"></script>
 		<link rel="stylesheet" href="css/style.css" />
 	</head>
-	<body>
-		<div id="chessBoard"></div>
+	<body class="flex">
+		<div class="header">CHESS</div>
+		<div class="game flex">
+			<div class="buttons-holder flex">
+				<button id="play-again" class="outside-buttons">
+					PLAY AGAIN
+				</button>
+				<button id="rotate" class="outside-buttons">
+					ROTATE BOARD
+				</button>
+			</div>
+
+			<div class="chessBoard flex"></div>
+			<div class="moves-container flex">
+				<div class="moves-header">MOVES HISTORY</div>
+				<div id="moves-list"></div>
+			</div>
+		</div>
 	</body>
 </html>
+
+<!-- SVG LINKS
+
+ -->

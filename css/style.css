@@ -1,0 +1,106 @@
+:root {
+	--color-light: #fece9e;
+	--color-dark: #d18b46;
+	font-size: 16px;
+}
+
+body {
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+	flex-flow: column;
+	justify-items: flex-start;
+	align-items: center;
+}
+
+.flex {
+	display: flex;
+	justify-content: center;
+}
+.header {
+	font-size: 5rem;
+	margin: 0;
+	padding: 0;
+	top: 10px;
+	position: absolute;
+}
+.game {
+	max-width: 1300px;
+	width: 100%;
+	justify-content: space-around;
+	align-items: center;
+	margin: 0;
+	padding: 10px;
+}
+
+.buttons-holder {
+	flex-flow: column;
+	justify-content: space-between;
+	height: 60vh;
+	width: 250px;
+}
+.outside-buttons {
+	width: 100%;
+	padding: 20px;
+	border: 2px solid var(--color-dark);
+	background-color: var(--color-light);
+	color: var(--color-dark);
+	font-size: 1.3rem;
+	font-weight: 800;
+	cursor: pointer;
+	outline: none;
+}
+
+.moves-container {
+	width: 250px;
+	height: 60vh;
+	flex-flow: column;
+}
+
+.moves-header {
+	font-size: 1.3rem;
+	font-weight: 900;
+	background-color: var(--color-dark);
+	color: var(--color-light);
+	width: 206px;
+	padding: 20px;
+	border: 2px solid var(--color-dark);
+	text-align: center;
+	margin: 0;
+}
+
+.chessBoard {
+	width: 640px;
+	text-align: center;
+	height: 640px;
+	position: relative;
+	flex-wrap: wrap;
+}
+
+.piecesContainer {
+	width: 80px;
+	height: 80px;
+	display: flex;
+	align-content: center;
+	justify-content: center;
+}
+.piecesContainer img {
+	height: 100%;
+	width: 100%;
+}
+.piecesContainer.dark {
+	background-color: var(--color-dark);
+}
+
+.piecesContainer.light {
+	background-color: var(--color-light);
+}
+
+#moves-list {
+	height: 100%;
+	background-color: var(--color-light);
+	width: 206px;
+	padding: 20px;
+	text-align: center;
+	border: 2px solid var(--color-dark);
+}
