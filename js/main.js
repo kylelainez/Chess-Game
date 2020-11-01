@@ -1,48 +1,5 @@
 //* ------------------------------------- Constants -------------------------------------
 
-const chessPieces = {
-	white: {
-		pawn: {
-			imgFile: 'img/whitePawn.svg'
-		},
-		rook: {
-			imgFile: 'img/whiteRook.svg'
-		},
-		knight: {
-			imgFile: 'img/whiteKnight.svg'
-		},
-		bishop: {
-			imgFile: 'img/whiteBishop.svg'
-		},
-		queen: {
-			imgFile: 'img/whiteQueen.svg'
-		},
-		king: {
-			imgFile: 'img/whiteKing.svg'
-		}
-	},
-	black: {
-		pawn: {
-			imgFile: 'img/blackPawn.svg'
-		},
-		rook: {
-			imgFile: 'img/blackRook.svg'
-		},
-		knight: {
-			imgFile: 'img/blackKnight.svg'
-		},
-		bishop: {
-			imgFile: 'img/blackBishop.svg'
-		},
-		queen: {
-			imgFile: 'img/blackQueen.svg'
-		},
-		king: {
-			imgFile: 'img/blackKing.svg'
-		}
-	}
-};
-
 const backRow = [
 	'rook',
 	'knight',
@@ -55,12 +12,10 @@ const backRow = [
 ];
 
 //* ------------------------------------- State Variables -------------------------------------
-let isChecked;
-let capturedPieces;
-let history;
 let boardPieces;
 let chessBoard;
-
+let players;
+let iconsList;
 //* ------------------------------------- DOM Elements -------------------------------------
 const chessBoardEl = document.querySelector('.chessBoard'); //Chess Board parent for multiple square containers
 const playAgainButton = document.querySelector('#play-again');
@@ -72,13 +27,9 @@ const rotateBoardButton = document.querySelector('#rotate');
 const initializeVariables = () => {
 	chessBoard = [];
 	boardPieces = [];
-	isChecked = {
-		white: false,
-		black: false
-	};
-	history = {
-		from: [],
-		to: []
+	players = {
+		white: new Player('white'),
+		black: new Player('black')
 	};
 };
 
@@ -91,8 +42,9 @@ const initializeChessBoard = () => {
 			const piecesContainer = document.createElement('div');
 			piecesContainer.className = 'piecesContainer';
 			piecesContainer.classList.add((i + j) % 2 === 0 ? 'dark' : 'light');
+			piecesContainer.id = i + '-' + j;
 			chessBoard[i].push(piecesContainer);
-			boardPieces[i].push({});
+			boardPieces[i].push(null);
 			chessBoardEl.appendChild(piecesContainer);
 		}
 	}
@@ -100,22 +52,53 @@ const initializeChessBoard = () => {
 
 // Initialize the Chess Pieces
 const initializeChessPieces = () => {
-	for (let team in chessPieces) {
-		const pawnIndex = team === 'white' ? 6 : 1;
-		const backIndex = team === 'white' ? 7 : 0;
-		for (let i = 0; i < 8; i++) {
-			const piece = document.createElement('img');
-			piece.src = chessPieces[team].pawn.imgFile;
-			boardPieces[pawnIndex][i].type = 'pawn';
-			boardPieces[pawnIndex][i].side = team;
-			renderChessPiece(pawnIndex, i, piece);
-
-			const backPiece = document.createElement('img');
-			backPiece.src = chessPieces[team][backRow[i]].imgFile;
-			boardPieces[backIndex][i].type = backRow[i];
-			boardPieces[backIndex][i].side = team;
-			renderChessPiece(backIndex, i, backPiece);
+	for (let i = 0; i < 8; i++) {
+		for (let j = 0; j < 8; j++) {
+			let piece;
+			let element = document.createElement('img');
+			if (i === 1) {
+				piece = getClasses('pawn', 'black', `${i}-${j}`);
+				boardPieces[i][j] = piece;
+				element.src = piece.icon;
+				renderChessPiece(i, j, element);
+			}
+			if (i === 6) {
+				piece = getClasses('pawn', 'white', `${i}-${j}`);
+				boardPieces[i][j] = piece;
+				element.src = piece.icon;
+				renderChessPiece(i, j, element);
+			}
+			if (i === 0) {
+				piece = getClasses(backRow[j], 'black', `${i}-${j}`);
+				boardPieces[i][j] = piece;
+				element.src = piece.icon;
+				renderChessPiece(i, j, element);
+			}
+			if (i === 7) {
+				piece = getClasses(backRow[j], 'white', `${i}-${j}`);
+				boardPieces[i][j] = piece;
+				element.src = piece.icon;
+				renderChessPiece(i, j, element);
+			}
 		}
+	}
+};
+
+const getClasses = (piece, side, position) => {
+	let icon = `img/${side}${piece[0].toUpperCase() + piece.slice(1)}.svg`;
+	switch (piece) {
+		case 'pawn':
+			return new Pawn(side, position, icon);
+		case 'rook':
+			return new Rook(side, position, icon);
+		case 'knight':
+			return new Knight(side, position, icon);
+		case 'bishop':
+			return new Bishop(side, position, icon);
+		case 'queen':
+			return new Queen(side, position, icon);
+		case 'king':
+			return new King(side, position, icon);
 	}
 };
 
@@ -124,9 +107,12 @@ const renderChessPiece = (firstIndex, secondIndex, element) => {
 	chessBoard[firstIndex][secondIndex].appendChild(element);
 };
 
-const possibleMoves = (piece) => {
+const possibleMoves = (i, j) => {
 	// TODO: Create an algorithm to check the available moves of the chess piece based on type and current location
 	// ? Maybe create a single function for checking moves or create multiple functions
+	if (boardPieces[i][j] === null) return;
+	boardPieces[i][j].checkMoves(i, j);
+	console.log(boardPieces[i][j]);
 };
 
 const captureEnemyPiece = (allyPiece, enemyPiece) => {
@@ -141,10 +127,29 @@ const movesHistory = () => {
 	//TODO: Updates moves history for every turn
 };
 
+const clickedContainer = (e) => {
+	e.preventDefault();
+	const el = e.target;
+	let id;
+	if (el.localName === 'img') {
+		id = el.parentElement.id.split('-');
+	} else {
+		id = el.id.split('-');
+	}
+
+	let i = parseInt(id[0]);
+	let j = parseInt(id[1]);
+	possibleMoves(i, j);
+};
+
+initializeVariables();
+initializeChessBoard();
+initializeChessPieces();
 //* ------------------------------------- Event Listeners  -------------------------------------
 
 // TODO: 'click' Event Listner for every chess piece
 // ? Maybe create a Drag and drop function for better user experience
+chessBoardEl.addEventListener('click', clickedContainer);
 
 // TODO: Event Listners for 'Play Again' button and/or 'Rotate Board' button
 // ? Rotate Board button for rotating the board manually for turns, or create a function for automatic rotating
