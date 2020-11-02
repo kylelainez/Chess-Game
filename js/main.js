@@ -110,9 +110,15 @@ const renderChessPiece = (firstIndex, secondIndex, element) => {
 const possibleMoves = (i, j) => {
 	// TODO: Create an algorithm to check the available moves of the chess piece based on type and current location
 	// ? Maybe create a single function for checking moves or create multiple functions
-	if (boardPieces[i][j] === null) return;
 	boardPieces[i][j].checkMoves(i, j);
-	console.log(boardPieces[i][j]);
+	chessBoard.forEach((element) => {
+		element.forEach((el) => {
+			el.classList.remove('availableMove');
+		});
+	});
+	boardPieces[i][j].availableMoves.forEach((element) => {
+		chessBoard[element[0]][element[1]].classList.add('availableMove');
+	});
 };
 
 const captureEnemyPiece = (allyPiece, enemyPiece) => {
@@ -139,7 +145,9 @@ const clickedContainer = (e) => {
 
 	let i = parseInt(id[0]);
 	let j = parseInt(id[1]);
-	possibleMoves(i, j);
+	if (boardPieces[i][j] !== null) {
+		possibleMoves(i, j);
+	}
 };
 
 initializeVariables();
