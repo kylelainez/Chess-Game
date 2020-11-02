@@ -153,6 +153,7 @@ const isKingChecked = () => {
 
 const clickedContainer = (e) => {
 	e.preventDefault();
+	if (e.target.className.includes('chessBoard')) return;
 	const el = e.target;
 	let id;
 	if (el.localName === 'img') {
@@ -167,6 +168,8 @@ const clickedContainer = (e) => {
 		selectedPiece.availableMoves.forEach((el) => {
 			if (i === el[0] && j === el[1]) {
 				let oldPos = selectedPiece.position.split('-');
+				if (boardPieces[i][j] !== null)
+					chessBoard[i][j].removeChild(boardPieces[i][j].element);
 				boardPieces[i][j] = selectedPiece;
 				boardPieces[oldPos[0]][oldPos[1]] = null;
 				selectedPiece.position = `${i}-${j}`;

@@ -162,6 +162,16 @@ class Knight extends Piece {
 				}
 			}
 		}
+		// Lower Right-Most
+		if (i + 1 < 8 && j + 2 < 8) {
+			if (boardPieces[i + 1][j + 2] === null) {
+				this.availableMoves.push([i + 1, j + 2]);
+			} else {
+				if (boardPieces[i + 1][j + 2].side !== this.side) {
+					this.availableMoves.push([i + 1, j + 2]);
+				}
+			}
+		}
 		// Lower Left
 		if (i + 2 < 8 && j - 1 >= 0) {
 			if (boardPieces[i + 2][j - 1] === null) {
@@ -172,6 +182,17 @@ class Knight extends Piece {
 				}
 			}
 		}
+		// Lower Left-Most
+		if (i + 1 < 8 && j - 2 >= 0) {
+			if (boardPieces[i + 1][j - 2] === null) {
+				this.availableMoves.push([i + 1, j - 2]);
+			} else {
+				if (boardPieces[i + 1][j - 2].side !== this.side) {
+					this.availableMoves.push([i + 1, j - 2]);
+				}
+			}
+		}
+
 		// Upper Right
 		if (i - 2 >= 0 && j + 1 < 8) {
 			if (boardPieces[i - 2][j + 1] === null) {
@@ -182,6 +203,16 @@ class Knight extends Piece {
 				}
 			}
 		}
+		// Upper Right-Most
+		if (i - 1 >= 0 && j + 2 < 8) {
+			if (boardPieces[i - 1][j + 2] === null) {
+				this.availableMoves.push([i - 1, j + 2]);
+			} else {
+				if (boardPieces[i - 1][j + 2].side !== this.side) {
+					this.availableMoves.push([i - 1, j + 2]);
+				}
+			}
+		}
 		// Upper Left
 		if (i - 2 >= 0 && j - 1 >= 0) {
 			if (boardPieces[i - 2][j - 1] === null) {
@@ -189,6 +220,16 @@ class Knight extends Piece {
 			} else {
 				if (boardPieces[i - 2][j - 1].side !== this.side) {
 					this.availableMoves.push([i - 2, j - 1]);
+				}
+			}
+		}
+		// Upper Left-Most
+		if (i - 1 >= 0 && j - 2 >= 0) {
+			if (boardPieces[i - 1][j - 2] === null) {
+				this.availableMoves.push([i - 1, j - 2]);
+			} else {
+				if (boardPieces[i - 1][j - 2].side !== this.side) {
+					this.availableMoves.push([i - 1, j - 2]);
 				}
 			}
 		}
