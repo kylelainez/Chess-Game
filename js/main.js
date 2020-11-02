@@ -55,34 +55,29 @@ const initializeChessBoard = () => {
 const initializeChessPieces = () => {
 	for (let i = 0; i < 8; i++) {
 		for (let j = 0; j < 8; j++) {
-			let piece;
-			let element = document.createElement('img');
 			if (i === 1) {
-				piece = getClasses('pawn', 'black', `${i}-${j}`);
-				boardPieces[i][j] = piece;
-				element.src = piece.icon;
-				renderChessPiece(i, j, element);
+				boardPieces[i][j] = getClasses('pawn', 'black', `${i}-${j}`);
 			}
 			if (i === 6) {
-				piece = getClasses('pawn', 'white', `${i}-${j}`);
-				boardPieces[i][j] = piece;
-				element.src = piece.icon;
-				renderChessPiece(i, j, element);
+				boardPieces[i][j] = getClasses('pawn', 'white', `${i}-${j}`);
 			}
 			if (i === 0) {
-				piece = getClasses(backRow[j], 'black', `${i}-${j}`);
-				boardPieces[i][j] = piece;
-				element.src = piece.icon;
-				renderChessPiece(i, j, element);
+				boardPieces[i][j] = getClasses(
+					backRow[j],
+					'black',
+					`${i}-${j}`
+				);
 			}
 			if (i === 7) {
-				piece = getClasses(backRow[j], 'white', `${i}-${j}`);
-				boardPieces[i][j] = piece;
-				element.src = piece.icon;
-				renderChessPiece(i, j, element);
+				boardPieces[i][j] = getClasses(
+					backRow[j],
+					'white',
+					`${i}-${j}`
+				);
 			}
 		}
 	}
+	renderChessPiece();
 };
 
 const getClasses = (piece, side, position) => {
@@ -104,8 +99,16 @@ const getClasses = (piece, side, position) => {
 };
 
 //Function to Render each Chess Pieces
-const renderChessPiece = (firstIndex, secondIndex, element) => {
-	chessBoard[firstIndex][secondIndex].appendChild(element);
+const renderChessPiece = () => {
+	boardPieces.forEach((elem, i) => {
+		elem.forEach((el, j) => {
+			if (boardPieces[i][j] !== null) {
+				const element = document.createElement('img');
+				element.src = boardPieces[i][j].icon;
+				chessBoard[i][j].appendChild(element);
+			}
+		});
+	});
 };
 
 const possibleMoves = (i, j) => {
@@ -152,6 +155,8 @@ const clickedContainer = (e) => {
 
 	let i = parseInt(id[0]);
 	let j = parseInt(id[1]);
+	if (selectedPiece !== null) {
+	}
 	if (selectedPiece === boardPieces[i][j]) {
 		chessBoard.forEach((element) => {
 			element.forEach((el) => {
