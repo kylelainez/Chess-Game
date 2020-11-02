@@ -16,6 +16,7 @@ let boardPieces;
 let chessBoard;
 let players;
 let iconsList;
+let selectedPiece;
 //* ------------------------------------- DOM Elements -------------------------------------
 const chessBoardEl = document.querySelector('.chessBoard'); //Chess Board parent for multiple square containers
 const playAgainButton = document.querySelector('#play-again');
@@ -110,6 +111,7 @@ const renderChessPiece = (firstIndex, secondIndex, element) => {
 const possibleMoves = (i, j) => {
 	// TODO: Create an algorithm to check the available moves of the chess piece based on type and current location
 	// ? Maybe create a single function for checking moves or create multiple functions
+	selectedPiece = boardPieces[i][j];
 	boardPieces[i][j].checkMoves(i, j);
 	chessBoard.forEach((element) => {
 		element.forEach((el) => {
@@ -133,6 +135,11 @@ const movesHistory = () => {
 	//TODO: Updates moves history for every turn
 };
 
+const isKingChecked = () => {
+	// TODO: Check if ally king is checked
+	// ? Maybe Call checkMove of every enemy piece and compare results to current ally king position
+};
+
 const clickedContainer = (e) => {
 	e.preventDefault();
 	const el = e.target;
@@ -145,6 +152,15 @@ const clickedContainer = (e) => {
 
 	let i = parseInt(id[0]);
 	let j = parseInt(id[1]);
+	if (selectedPiece === boardPieces[i][j]) {
+		chessBoard.forEach((element) => {
+			element.forEach((el) => {
+				el.classList.remove('availableMove');
+			});
+		});
+		selectedPiece = null;
+		return;
+	}
 	if (boardPieces[i][j] !== null) {
 		possibleMoves(i, j);
 	}

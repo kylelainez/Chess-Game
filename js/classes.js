@@ -483,7 +483,7 @@ class King extends Piece {
 			}
 		}
 		// Move Lower Left
-		if (i + 1 >= 0 && j - 1 >= 0) {
+		if (i + 1 < 8 && j - 1 >= 0) {
 			if (boardPieces[i + 1][j - 1] === null) {
 				this.availableMoves.push([i + 1, j - 1]);
 			} else {
@@ -493,7 +493,7 @@ class King extends Piece {
 			}
 		}
 		// Move Lower Left
-		if (i + 1 >= 0 && j + 1 >= 0) {
+		if (i + 1 < 8 && j + 1 < 8) {
 			if (boardPieces[i + 1][j + 1] === null) {
 				this.availableMoves.push([i + 1, j + 1]);
 			} else {
