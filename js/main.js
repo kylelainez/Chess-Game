@@ -29,8 +29,8 @@ const initializeVariables = () => {
 	chessBoard = [];
 	boardPieces = [];
 	players = {
-		white: new Player('white'),
-		black: new Player('black')
+		white: new Player('white', true),
+		black: new Player('black', false)
 	};
 	selectedPiece = null;
 };
@@ -164,6 +164,13 @@ const clickedContainer = (e) => {
 
 	let i = parseInt(id[0]);
 	let j = parseInt(id[1]);
+	if (
+		boardPieces[i][j] !== null &&
+		selectedPiece === null &&
+		players[boardPieces[i][j].side].turn === false
+	) {
+		return;
+	}
 	if (selectedPiece !== null) {
 		if (
 			boardPieces[i][j] === null ||
@@ -172,6 +179,14 @@ const clickedContainer = (e) => {
 			selectedPiece.availableMoves.forEach((el) => {
 				if (i === el[0] && j === el[1]) {
 					let oldPos = selectedPiece.position.split('-');
+					if (
+						selectedPiece.constructor.name === 'King' ||
+						selectedPiece.constructor.name === 'Rook'
+					) {
+						if (selectedPiece.hasMoved === false) {
+							selectedPiece.hasMoved = true;
+						}
+					}
 					if (boardPieces[i][j] !== null)
 						chessBoard[i][j].removeChild(boardPieces[i][j].element);
 					boardPieces[i][j] = selectedPiece;
@@ -183,6 +198,13 @@ const clickedContainer = (e) => {
 							el.classList.remove('availableMove');
 						});
 					});
+					if (boardPieces[i][j].side === 'white') {
+						players.white.turn = false;
+						players.black.turn = true;
+					} else {
+						players.white.turn = true;
+						players.black.turn = false;
+					}
 				}
 			});
 

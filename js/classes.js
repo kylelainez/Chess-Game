@@ -7,11 +7,12 @@ class Piece {
 }
 
 class Player {
-	constructor(side) {
+	constructor(side, turn) {
 		this.side = side;
 		this.eatenPieces = [];
 		this.moves = [];
 		this.checked = false;
+		this.turn = turn;
 	}
 }
 
@@ -80,6 +81,7 @@ class Pawn extends Piece {
 class Rook extends Piece {
 	constructor(side, position, icon) {
 		super(side, position, icon);
+		this.hasMoved = false;
 	}
 	checkMoves(i, j) {
 		this.availableMoves = [];
@@ -456,6 +458,7 @@ class Queen extends Piece {
 class King extends Piece {
 	constructor(side, position, icon) {
 		super(side, position, icon);
+		this.hasMoved = false;
 	}
 	checkMoves(i, j) {
 		this.availableMoves = [];
@@ -539,5 +542,10 @@ class King extends Piece {
 				}
 			}
 		}
+
+		//Castling Logic
+		// if(this.hasMoved === false){
+		// 	this
+		// }
 	}
 }
