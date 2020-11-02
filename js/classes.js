@@ -23,15 +23,13 @@ class Pawn extends Piece {
 		this.availableMoves = [];
 		//Check Pawn moves for white
 		if (this.side === 'white') {
-			if (boardPieces[i - 1][j] === null) {
+			if (i - 1 >= 0 && boardPieces[i - 1][j] === null) {
 				this.availableMoves.push([i - 1, j]);
-				if (i === 6) {
-					boardPieces[i - 2][j] === null
-						? this.availableMoves.push([i - 2, j])
-						: null;
+				if (i === 6 && boardPieces[i - 2][j] === null) {
+					this.availableMoves.push([i - 2, j]);
 				}
 			}
-			//Check Enemy Piece
+			// Left Enemy
 			if (
 				i - 1 >= 0 &&
 				j - 1 >= 0 &&
@@ -40,6 +38,7 @@ class Pawn extends Piece {
 			) {
 				this.availableMoves.push([i - 1, j - 1]);
 			}
+			//Right Enemy
 			if (
 				i - 1 >= 0 &&
 				j + 1 < 8 &&
@@ -49,16 +48,14 @@ class Pawn extends Piece {
 				this.availableMoves.push([i - 1, j + 1]);
 			}
 		} else {
-			//Check Pawn moves for black
-			if (boardPieces[i + 1][j] === null) {
+			// Black Side
+			if (i + 1 < 8 && boardPieces[i + 1][j] === null) {
 				this.availableMoves.push([i + 1, j]);
-				if (i === 1) {
-					boardPieces[i + 2][j] === null
-						? this.availableMoves.push([i + 2, j])
-						: null;
+				if (i === 1 && boardPieces[i + 2][j] === null) {
+					this.availableMoves.push([i + 2, j]);
 				}
 			}
-			//Check enemy piece
+			// Left Enemy
 			if (
 				i + 1 < 8 &&
 				j - 1 >= 0 &&
@@ -67,6 +64,7 @@ class Pawn extends Piece {
 			) {
 				this.availableMoves.push([i + 1, j - 1]);
 			}
+			//Right Enemy
 			if (
 				i + 1 < 8 &&
 				j + 1 < 8 &&
@@ -369,9 +367,7 @@ class Queen extends Piece {
 		index = i - 1;
 		// Check Down Moves
 		while (index >= 0) {
-			console.log('here');
 			if (boardPieces[index][j] === null) {
-				console.log('null');
 				this.availableMoves.push([index, j]);
 			} else {
 				if (boardPieces[index][j].side !== this.side) {
@@ -437,7 +433,7 @@ class King extends Piece {
 			if (boardPieces[i + 1][j] === null) {
 				this.availableMoves.push([i + 1, j]);
 			} else {
-				if (boardPieces[i - 1][j].side !== this.side) {
+				if (boardPieces[i + 1][j].side !== this.side) {
 					this.availableMoves.push([i + 1, j]);
 				}
 			}
@@ -457,7 +453,7 @@ class King extends Piece {
 			if (boardPieces[i][j + 1] === null) {
 				this.availableMoves.push([i, j + 1]);
 			} else {
-				if (boardPieces[i][j - 1].side !== this.side) {
+				if (boardPieces[i][j + 1].side !== this.side) {
 					this.availableMoves.push([i, j + 1]);
 				}
 			}

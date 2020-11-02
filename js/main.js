@@ -32,6 +32,7 @@ const initializeVariables = () => {
 		white: new Player('white'),
 		black: new Player('black')
 	};
+	selectedPiece = null;
 };
 
 // Initialize the Chess Board and Render it
@@ -55,11 +56,16 @@ const initializeChessBoard = () => {
 const initializeChessPieces = () => {
 	for (let i = 0; i < 8; i++) {
 		for (let j = 0; j < 8; j++) {
+			const element = document.createElement('img');
 			if (i === 1) {
 				boardPieces[i][j] = getClasses('pawn', 'black', `${i}-${j}`);
+				element.src = boardPieces[i][j].icon;
+				boardPieces[i][j].element = element;
 			}
 			if (i === 6) {
 				boardPieces[i][j] = getClasses('pawn', 'white', `${i}-${j}`);
+				element.src = boardPieces[i][j].icon;
+				boardPieces[i][j].element = element;
 			}
 			if (i === 0) {
 				boardPieces[i][j] = getClasses(
@@ -67,6 +73,8 @@ const initializeChessPieces = () => {
 					'black',
 					`${i}-${j}`
 				);
+				element.src = boardPieces[i][j].icon;
+				boardPieces[i][j].element = element;
 			}
 			if (i === 7) {
 				boardPieces[i][j] = getClasses(
@@ -74,6 +82,8 @@ const initializeChessPieces = () => {
 					'white',
 					`${i}-${j}`
 				);
+				element.src = boardPieces[i][j].icon;
+				boardPieces[i][j].element = element;
 			}
 		}
 	}
@@ -102,10 +112,8 @@ const getClasses = (piece, side, position) => {
 const renderChessPiece = () => {
 	boardPieces.forEach((elem, i) => {
 		elem.forEach((el, j) => {
-			if (boardPieces[i][j] !== null) {
-				const element = document.createElement('img');
-				element.src = boardPieces[i][j].icon;
-				chessBoard[i][j].appendChild(element);
+			if (el !== null) {
+				chessBoard[i][j].appendChild(el.element);
 			}
 		});
 	});
@@ -156,6 +164,16 @@ const clickedContainer = (e) => {
 	let i = parseInt(id[0]);
 	let j = parseInt(id[1]);
 	if (selectedPiece !== null) {
+		selectedPiece.availableMoves.forEach((el) => {
+			if (i === el[0] && j === el[1]) {
+				let oldPos = selectedPiece.position.split('-');
+				boardPieces[i][j] = selectedPiece;
+				boardPieces[oldPos[0]][oldPos[1]] = null;
+				selectedPiece.position = `${i}-${j}`;
+				selectedPiece = null;
+			}
+		});
+		renderChessPiece();
 	}
 	if (selectedPiece === boardPieces[i][j]) {
 		chessBoard.forEach((element) => {
