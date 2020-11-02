@@ -165,18 +165,30 @@ const clickedContainer = (e) => {
 	let i = parseInt(id[0]);
 	let j = parseInt(id[1]);
 	if (selectedPiece !== null) {
-		selectedPiece.availableMoves.forEach((el) => {
-			if (i === el[0] && j === el[1]) {
-				let oldPos = selectedPiece.position.split('-');
-				if (boardPieces[i][j] !== null)
-					chessBoard[i][j].removeChild(boardPieces[i][j].element);
-				boardPieces[i][j] = selectedPiece;
-				boardPieces[oldPos[0]][oldPos[1]] = null;
-				selectedPiece.position = `${i}-${j}`;
-				selectedPiece = null;
-			}
-		});
-		renderChessPiece();
+		if (
+			boardPieces[i][j] === null ||
+			boardPieces[i][j].side !== selectedPiece.side
+		) {
+			selectedPiece.availableMoves.forEach((el) => {
+				if (i === el[0] && j === el[1]) {
+					let oldPos = selectedPiece.position.split('-');
+					if (boardPieces[i][j] !== null)
+						chessBoard[i][j].removeChild(boardPieces[i][j].element);
+					boardPieces[i][j] = selectedPiece;
+					boardPieces[oldPos[0]][oldPos[1]] = null;
+					selectedPiece.position = `${i}-${j}`;
+					selectedPiece = null;
+					chessBoard.forEach((element) => {
+						element.forEach((el) => {
+							el.classList.remove('availableMove');
+						});
+					});
+				}
+			});
+
+			renderChessPiece();
+			return;
+		}
 	}
 	if (selectedPiece === boardPieces[i][j]) {
 		chessBoard.forEach((element) => {
