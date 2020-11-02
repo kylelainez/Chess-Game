@@ -15,13 +15,14 @@ const backRow = [
 let boardPieces;
 let chessBoard;
 let players;
-let iconsList;
+let currentPawn;
 let selectedPiece;
 //* ------------------------------------- DOM Elements -------------------------------------
 const chessBoardEl = document.querySelector('.chessBoard'); //Chess Board parent for multiple square containers
 const playAgainButton = document.querySelector('#play-again');
 const rotateBoardButton = document.querySelector('#rotate');
-
+const promotePawnEl = document.querySelector('#promotePawn');
+const promotePawnSelectionEL = document.querySelector('.promote-content');
 //* ------------------------------------- Functions -------------------------------------
 
 // Function for initializing State Variables
@@ -33,6 +34,7 @@ const initializeVariables = () => {
 		black: new Player('black', false)
 	};
 	selectedPiece = null;
+	currentPawn = null;
 };
 
 // Initialize the Chess Board and Render it
@@ -134,8 +136,41 @@ const possibleMoves = (i, j) => {
 	});
 };
 
-const captureEnemyPiece = (allyPiece, enemyPiece) => {
-	// TODO: Function for capturing enemy pieces
+const promotePawn = (i, j, side) => {
+	const choices = ['Rook', 'Knight', 'Bishop', 'Queen'];
+	currentPawn = [i, j, side];
+	for (let x = 0; x < choices.length; x++) {
+		const element = document.createElement('img');
+		element.src = `img/${side}${choices[x]}.svg`;
+		element.id = choices[x];
+		element.className = 'selection';
+		element.addEventListener('click', changePawn);
+		promotePawnSelectionEL.appendChild(element);
+	}
+	promotePawnEl.style.display = 'block';
+};
+
+const changePawn = (e) => {
+	const el = e.target;
+	console.log(el);
+	let i = currentPawn[0];
+	let j = currentPawn[1];
+	let side = currentPawn[2];
+	chessBoard[i][j].removeChild(boardPieces[i][j].element);
+	boardPieces[i][j] = getClasses(
+		el.id[0].toLowerCase() + el.id.slice(1),
+		side,
+		`${i}-${j}`
+	);
+	const element = document.createElement('img');
+	element.src = el.src;
+	boardPieces[i][j].element = element;
+
+	renderChessPiece();
+
+	promotePawnSelectionEL.innerHTML = '';
+	currentPawn = null;
+	promotePawnEl.style.display = 'none';
 };
 
 const winLoseChecker = () => {
@@ -161,7 +196,6 @@ const clickedContainer = (e) => {
 	} else {
 		id = el.id.split('-');
 	}
-
 	let i = parseInt(id[0]);
 	let j = parseInt(id[1]);
 	if (
@@ -171,6 +205,7 @@ const clickedContainer = (e) => {
 	) {
 		return;
 	}
+	// Move Pieces
 	if (selectedPiece !== null) {
 		if (
 			boardPieces[i][j] === null ||
@@ -187,11 +222,21 @@ const clickedContainer = (e) => {
 							selectedPiece.hasMoved = true;
 						}
 					}
+					// Capture Enemy Piece
 					if (boardPieces[i][j] !== null)
 						chessBoard[i][j].removeChild(boardPieces[i][j].element);
 					boardPieces[i][j] = selectedPiece;
 					boardPieces[oldPos[0]][oldPos[1]] = null;
 					selectedPiece.position = `${i}-${j}`;
+					if (selectedPiece.constructor.name === 'Pawn') {
+						if (selectedPiece.side === 'white' && i === 0) {
+							// Call Promotion Function'
+							promotePawn(i, j, selectedPiece.side);
+						} else if (selectedPiece.side === 'black' && i === 7) {
+							//Call Promotion Function
+							promotePawn(i, j, selectedPiece.side);
+						}
+					}
 					selectedPiece = null;
 					chessBoard.forEach((element) => {
 						element.forEach((el) => {
