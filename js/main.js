@@ -17,12 +17,14 @@ let chessBoard;
 let players;
 let currentPawn;
 let selectedPiece;
+let kingPositions;
 //* ------------------------------------- DOM Elements -------------------------------------
 const chessBoardEl = document.querySelector('.chessBoard'); //Chess Board parent for multiple square containers
 const playAgainButton = document.querySelector('#play-again');
 const rotateBoardButton = document.querySelector('#rotate');
 const promotePawnEl = document.querySelector('#promotePawn');
 const promotePawnSelectionEL = document.querySelector('.promote-content');
+const playerTurn = document.querySelector('#turn');
 //* ------------------------------------- Functions -------------------------------------
 
 // Function for initializing State Variables
@@ -35,6 +37,10 @@ const initializeVariables = () => {
 	};
 	selectedPiece = null;
 	currentPawn = null;
+	kingPositions = {
+		white: [7, 4],
+		black: [0, 4]
+	};
 };
 
 // Initialize the Chess Board and Render it
@@ -63,11 +69,13 @@ const initializeChessPieces = () => {
 				boardPieces[i][j] = getClasses('pawn', 'black', `${i}-${j}`);
 				element.src = boardPieces[i][j].icon;
 				boardPieces[i][j].element = element;
+				players.black.pieces.push([i, j]);
 			}
 			if (i === 6) {
 				boardPieces[i][j] = getClasses('pawn', 'white', `${i}-${j}`);
 				element.src = boardPieces[i][j].icon;
 				boardPieces[i][j].element = element;
+				players.white.pieces.push([i, j]);
 			}
 			if (i === 0) {
 				boardPieces[i][j] = getClasses(
@@ -77,6 +85,7 @@ const initializeChessPieces = () => {
 				);
 				element.src = boardPieces[i][j].icon;
 				boardPieces[i][j].element = element;
+				players.black.pieces.push([i, j]);
 			}
 			if (i === 7) {
 				boardPieces[i][j] = getClasses(
@@ -86,6 +95,7 @@ const initializeChessPieces = () => {
 				);
 				element.src = boardPieces[i][j].icon;
 				boardPieces[i][j].element = element;
+				players.white.pieces.push([i, j]);
 			}
 		}
 	}
@@ -125,6 +135,9 @@ const possibleMoves = (i, j) => {
 	// TODO: Create an algorithm to check the available moves of the chess piece based on type and current location
 	// ? Maybe create a single function for checking moves or create multiple functions
 	selectedPiece = boardPieces[i][j];
+	let enemySide = selectedPiece.side === 'white' ? 'black' : 'white';
+	const checkEnemy = isKingChecked(enemySide);
+	console.log(checkEnemy);
 	boardPieces[i][j].checkMoves(i, j);
 	chessBoard.forEach((element) => {
 		element.forEach((el) => {
@@ -181,9 +194,85 @@ const movesHistory = () => {
 	//TODO: Updates moves history for every turn
 };
 
-const isKingChecked = () => {
+const isKingChecked = (side) => {
 	// TODO: Check if ally king is checked
 	// ? Maybe Call checkMove of every enemy piece and compare results to current ally king position
+	const checkPieces = players[side].pieces;
+	const enemyAttackCoordinates = [];
+	checkPieces.forEach((el) => {
+		boardPieces[el[0]][el[1]].kingCheck();
+		boardPieces[el[0]][el[1]].availableMoves.forEach((e) => {
+			enemyAttackCoordinates.push([e[0], e[1]]);
+		});
+	});
+	return enemyAttackCoordinates;
+};
+
+const movePieces = (i, j) => {
+	// Move Pieces
+	if (selectedPiece !== null) {
+		if (
+			boardPieces[i][j] === null ||
+			boardPieces[i][j].side !== selectedPiece.side
+		) {
+			selectedPiece.availableMoves.forEach((el) => {
+				if (i === el[0] && j === el[1]) {
+					let oldPos = selectedPiece.position.split('-');
+					if (
+						selectedPiece.constructor.name === 'King' ||
+						selectedPiece.constructor.name === 'Rook'
+					) {
+						if (selectedPiece.hasMoved === false) {
+							selectedPiece.hasMoved = true;
+						}
+					}
+					if (selectedPiece.constructor.name === 'King') {
+						if (selectedPiece.side === 'white') {
+							kingPositions.white = [i, j];
+						} else {
+							kingPositions.black = [i, j];
+						}
+					}
+					// Capture Enemy Piece
+					if (boardPieces[i][j] !== null)
+						chessBoard[i][j].removeChild(boardPieces[i][j].element);
+					boardPieces[i][j] = selectedPiece;
+					boardPieces[oldPos[0]][oldPos[1]] = null;
+					selectedPiece.position = `${i}-${j}`;
+					// Pawn Promotion
+					if (selectedPiece.constructor.name === 'Pawn') {
+						if (selectedPiece.side === 'white' && i === 0) {
+							// Call Promotion Function'
+							promotePawn(i, j, selectedPiece.side);
+						} else if (selectedPiece.side === 'black' && i === 7) {
+							//Call Promotion Function
+							promotePawn(i, j, selectedPiece.side);
+						}
+					}
+					selectedPiece = null;
+					chessBoard.forEach((element) => {
+						element.forEach((el) => {
+							el.classList.remove('availableMove');
+						});
+					});
+					if (boardPieces[i][j].side === 'white') {
+						players.white.turn = false;
+						players.black.turn = true;
+						turn.innerText = "Black's Turn";
+					} else {
+						players.white.turn = true;
+						players.black.turn = false;
+						turn.innerText = "White's Turn";
+					}
+				}
+			});
+
+			renderChessPiece();
+			return true;
+		}
+	} else {
+		return false;
+	}
 };
 
 const clickedContainer = (e) => {
@@ -205,58 +294,8 @@ const clickedContainer = (e) => {
 	) {
 		return;
 	}
-	// Move Pieces
-	if (selectedPiece !== null) {
-		if (
-			boardPieces[i][j] === null ||
-			boardPieces[i][j].side !== selectedPiece.side
-		) {
-			selectedPiece.availableMoves.forEach((el) => {
-				if (i === el[0] && j === el[1]) {
-					let oldPos = selectedPiece.position.split('-');
-					if (
-						selectedPiece.constructor.name === 'King' ||
-						selectedPiece.constructor.name === 'Rook'
-					) {
-						if (selectedPiece.hasMoved === false) {
-							selectedPiece.hasMoved = true;
-						}
-					}
-					// Capture Enemy Piece
-					if (boardPieces[i][j] !== null)
-						chessBoard[i][j].removeChild(boardPieces[i][j].element);
-					boardPieces[i][j] = selectedPiece;
-					boardPieces[oldPos[0]][oldPos[1]] = null;
-					selectedPiece.position = `${i}-${j}`;
-					if (selectedPiece.constructor.name === 'Pawn') {
-						if (selectedPiece.side === 'white' && i === 0) {
-							// Call Promotion Function'
-							promotePawn(i, j, selectedPiece.side);
-						} else if (selectedPiece.side === 'black' && i === 7) {
-							//Call Promotion Function
-							promotePawn(i, j, selectedPiece.side);
-						}
-					}
-					selectedPiece = null;
-					chessBoard.forEach((element) => {
-						element.forEach((el) => {
-							el.classList.remove('availableMove');
-						});
-					});
-					if (boardPieces[i][j].side === 'white') {
-						players.white.turn = false;
-						players.black.turn = true;
-					} else {
-						players.white.turn = true;
-						players.black.turn = false;
-					}
-				}
-			});
-
-			renderChessPiece();
-			return;
-		}
-	}
+	const check = movePieces(i, j);
+	if (check) return;
 	if (selectedPiece === boardPieces[i][j]) {
 		chessBoard.forEach((element) => {
 			element.forEach((el) => {

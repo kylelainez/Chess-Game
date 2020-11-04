@@ -13,6 +13,7 @@ class Player {
 		this.moves = [];
 		this.checked = false;
 		this.turn = turn;
+		this.pieces = [];
 	}
 }
 
@@ -74,6 +75,24 @@ class Pawn extends Piece {
 			) {
 				this.availableMoves.push([i + 1, j + 1]);
 			}
+		}
+	}
+	kingCheck() {
+		let id = this.element.parentElement.id.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
+		let side = this.side;
+		this.availableMoves = [];
+		if (side === 'white') {
+			if (i - 1 >= 0 && j - 1 >= 0)
+				this.availableMoves.push([i - 1, j - 1]); //Left Attack
+			if (i - 1 >= 0 && j + 1 < 8)
+				this.availableMoves.push([i - 1, j + 1]); //Right Attack
+		} else {
+			if (i + 1 < 8 && j - 1 >= 0)
+				this.availableMoves.push([i + 1, j - 1]); //Left
+			if (i + 1 < 8 && j + 1 < 8)
+				this.availableMoves.push([i + 1, j + 1]); //Right
 		}
 	}
 }
@@ -144,6 +163,41 @@ class Rook extends Piece {
 				}
 			}
 			index--;
+		}
+	}
+	kingCheck() {
+		let id = this.element.parentElement.id.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
+		this.availableMoves = [];
+
+		//Up Moves
+		let index = i - 1;
+		while (index >= 0) {
+			this.availableMoves.push([index, j]);
+			if (boardPieces[index][j] !== null) break;
+			index--;
+		}
+		//Down Moves
+		index = i + 1;
+		while (index < 8) {
+			this.availableMoves.push([index, j]);
+			if (boardPieces[index][j] !== null) break;
+			index++;
+		}
+		//Left Moves
+		index = j - 1;
+		while (index >= 0) {
+			this.availableMoves.push([i, index]);
+			if (boardPieces[i][index] !== null) break;
+			index--;
+		}
+		//Right Moves
+		index = j + 1;
+		while (index < 8) {
+			this.availableMoves.push([i, index]);
+			if (boardPieces[i][index] !== null) break;
+			index++;
 		}
 	}
 }
@@ -236,6 +290,20 @@ class Knight extends Piece {
 			}
 		}
 	}
+	kingCheck() {
+		let id = this.element.parentElement.id.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
+		this.availableMoves = [];
+		if (i - 2 >= 0 && j - 1 >= 0) this.availableMoves.push([i - 2, j - 1]);
+		if (i - 1 >= 0 && j - 2 >= 0) this.availableMoves.push([i - 1, j - 2]);
+		if (i + 1 < 8 && j - 2 >= 0) this.availableMoves.push([i + 1, j - 2]);
+		if (i + 2 < 8 && j - 1 >= 0) this.availableMoves.push([i + 2, j - 1]);
+		if (i + 2 < 8 && j + 1 < 8) this.availableMoves.push([i + 2, j + 1]);
+		if (i + 1 < 8 && j + 2 < 8) this.availableMoves.push([i + 1, j + 2]);
+		if (i - 1 >= 0 && j + 2 < 8) this.availableMoves.push([i - 1, j + 2]);
+		if (i - 2 >= 0 && j + 1 < 8) this.availableMoves.push([i - 2, j + 1]);
+	}
 }
 
 class Bishop extends Piece {
@@ -309,6 +377,44 @@ class Bishop extends Piece {
 					break;
 				}
 			}
+			index1++;
+			index2++;
+		}
+	}
+	kingCheck() {
+		let id = this.element.parentElement.id.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
+		this.availableMoves = [];
+		let index1 = i - 1;
+		let index2 = j - 1;
+		while (index1 >= 0 && index2 >= 0) {
+			this.availableMoves.push([index1, index2]);
+			if (boardPieces[index1][index2] !== null) break;
+			index1--;
+			index2--;
+		}
+		index1 = i - 1;
+		index2 = j + 1;
+		while (index1 >= 0 && index2 < 8) {
+			this.availableMoves.push([index1, index2]);
+			if (boardPieces[index1][index2] !== null) break;
+			index1--;
+			index2++;
+		}
+		index1 = i + 1;
+		index2 = j - 1;
+		while (index1 < 8 && index2 >= 0) {
+			this.availableMoves.push([index1, index2]);
+			if (boardPieces[index1][index2] !== null) break;
+			index1++;
+			index2--;
+		}
+		index1 = i + 1;
+		index2 = j + 1;
+		while (index1 < 8 && index2 < 8) {
+			this.availableMoves.push([index1, index2]);
+			if (boardPieces[index1][index2] !== null) break;
 			index1++;
 			index2++;
 		}
@@ -453,6 +559,71 @@ class Queen extends Piece {
 			index--;
 		}
 	}
+	kingCheck() {
+		let id = this.element.parentElement.id.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
+		this.availableMoves = [];
+		let index1 = i - 1;
+		let index2 = j - 1;
+		while (index1 >= 0 && index2 >= 0) {
+			this.availableMoves.push([index1, index2]);
+			if (boardPieces[index1][index2] !== null) break;
+			index1--;
+			index2--;
+		}
+		index1 = i - 1;
+		index2 = j + 1;
+		while (index1 >= 0 && index2 < 8) {
+			this.availableMoves.push([index1, index2]);
+			if (boardPieces[index1][index2] !== null) break;
+			index1--;
+			index2++;
+		}
+		index1 = i + 1;
+		index2 = j - 1;
+		while (index1 < 8 && index2 >= 0) {
+			this.availableMoves.push([index1, index2]);
+			if (boardPieces[index1][index2] !== null) break;
+			index1++;
+			index2--;
+		}
+		index1 = i + 1;
+		index2 = j + 1;
+		while (index1 < 8 && index2 < 8) {
+			this.availableMoves.push([index1, index2]);
+			if (boardPieces[index1][index2] !== null) break;
+			index1++;
+			index2++;
+		}
+		let index = i - 1;
+		while (index >= 0) {
+			this.availableMoves.push([index, j]);
+			if (boardPieces[index][j] !== null) break;
+			index--;
+		}
+		//Down Moves
+		index = i + 1;
+		while (index < 8) {
+			this.availableMoves.push([index, j]);
+			if (boardPieces[index][j] !== null) break;
+			index++;
+		}
+		//Left Moves
+		index = j - 1;
+		while (index >= 0) {
+			this.availableMoves.push([i, index]);
+			if (boardPieces[i][index] !== null) break;
+			index--;
+		}
+		//Right Moves
+		index = j + 1;
+		while (index < 8) {
+			this.availableMoves.push([i, index]);
+			if (boardPieces[i][index] !== null) break;
+			index++;
+		}
+	}
 }
 
 class King extends Piece {
@@ -542,10 +713,20 @@ class King extends Piece {
 				}
 			}
 		}
+	}
+	kingCheck() {
+		let id = this.element.parentElement.id.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
+		this.availableMoves = [];
 
-		//Castling Logic
-		// if(this.hasMoved === false){
-		// 	this
-		// }
+		if (i - 1 >= 0) this.availableMoves.push([i - 1, j]);
+		if (i + 1 < 8) this.availableMoves.push([i + 1, j]);
+		if (j - 1 >= 0) this.availableMoves.push([i, j - 1]);
+		if (j + 1 < 8) this.availableMoves.push([i, j + 1]);
+		if (i - 1 >= 0 && j - 1 >= 0) this.availableMoves.push([i - 1, j - 1]);
+		if (i + 1 < 8 && j + 1 < 8) this.availableMoves.push([i + 1, j + 1]);
+		if (i + 1 < 8 && j - 1 >= 0) this.availableMoves.push([i + 1, j - 1]);
+		if (i - 1 >= 0 && j + 1 < 8) this.availableMoves.push([i - 1, j + 1]);
 	}
 }

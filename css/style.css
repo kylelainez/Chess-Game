@@ -133,3 +133,7 @@ body {
 	text-align: center;
 	border: 2px solid var(--color-dark);
 }
+#turn {
+	font-size: 2rem;
+	text-align: center;
+}
