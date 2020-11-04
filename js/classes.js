@@ -86,6 +86,7 @@ class Pawn extends Piece {
 		let j = parseInt(id[1]);
 		let side = this.side;
 		this.availableMoves = [];
+		// console.log(this);
 		if (side === 'white') {
 			if (i - 1 >= 0 && j - 1 >= 0)
 				this.availableMoves.push([i - 1, j - 1]); //Left Attack
@@ -438,7 +439,6 @@ class Queen extends Piece {
 		super(side, position, icon);
 	}
 	checkMoves() {
-		console.log('checkMoves');
 		this.availableMoves = [];
 		let id = this.position.split('-');
 		let i = parseInt(id[0]);
@@ -576,7 +576,6 @@ class Queen extends Piece {
 		}
 	}
 	kingCheck() {
-		console.log('kingCheck');
 		let id = this.position.split('-');
 		let i = parseInt(id[0]);
 		let j = parseInt(id[1]);

@@ -134,57 +134,18 @@ const renderChessPiece = () => {
 const possibleMoves = (i, j) => {
 	// TODO: Create an algorithm to check the available moves of the chess piece based on type and current location
 	// ? Maybe create a single function for checking moves or create multiple functions
-	selectedPiece = boardPieces[i][j];
-	selectedPiece.checkMoves(i, j);
 	chessBoard.forEach((element) => {
 		element.forEach((el) => {
 			el.classList.remove('availableMove');
 		});
 	});
-	let tempBoard = [];
-	boardPieces.forEach((elem) => {
-		tempBoard.push([...elem]);
-	});
-	for (let idx = 0; idx < selectedPiece.availableMoves.length; idx++) {
-		let el = selectedPiece.availableMoves[idx];
-		let enemySide = selectedPiece.side === 'white' ? 'black' : 'white';
-
-		boardPieces[el[0]][el[1]] = selectedPiece;
-		boardPieces[i][j] = null;
-		// players[selectedPiece.side].pieces.forEach((elem, index) => {
-		// 	if (elem[0] === i && elem[1] === j)
-		// 		players[selectedPiece.side].pieces[index] = [el[0], el[1]];
-		// });
-
-		const checkEnemy = isKingChecked(enemySide);
-
-		// console.log(checkEnemy);
-		checkEnemy.forEach((elem) => {
-			if (selectedPiece.constructor.name === 'King') {
-				if (el[0] === elem[0] && el[1] === elem[1]) {
-					selectedPiece.availableMoves.splice(idx, 1);
-					--idx;
-				}
-			} else {
-				if (
-					elem[0] === kingPositions[selectedPiece.side][0] &&
-					elem[1] === kingPositions[selectedPiece.side][1]
-				) {
-					// console.log(elem, kingPositions[selectedPiece.side]);
-					// console.log('here');
-					selectedPiece.availableMoves.splice(idx, 1);
-					--idx;
-				}
-			}
-		});
-		// boardPieces[i][j] = selectedPiece;
-		// boardPieces[el[0]][el[1]] = null;
+	if (selectedPiece === boardPieces[i][j]) {
+		selectedPiece = null;
+		return;
 	}
-	boardPieces = [];
-	tempBoard.forEach((elem) => {
-		boardPieces.push([...elem]);
-	});
-	kingPositions[selectedPiece.side] = [i, j];
+	selectedPiece = boardPieces[i][j];
+	selectedPiece.checkMoves(i, j);
+	isAllyKingChecked(selectedPiece.side === 'white' ? 'black' : 'white');
 	selectedPiece.availableMoves.forEach((element) => {
 		chessBoard[element[0]][element[1]].classList.add('availableMove');
 	});
@@ -234,19 +195,51 @@ const movesHistory = () => {
 	//TODO: Updates moves history for every turn
 };
 
-const isKingChecked = (side) => {
+const isAllyKingChecked = (side) => {
 	// TODO: Check if ally king is checked
 	// ? Maybe Call checkMove of every enemy piece and compare results to current ally king position
-	const checkPieces = players[side].pieces;
-	const enemyAttackCoordinates = [];
-	checkPieces.forEach((el) => {
-		boardPieces[el[0]][el[1]].kingCheck();
-		boardPieces[el[0]][el[1]].availableMoves.forEach((e) => {
-			enemyAttackCoordinates.push([e[0], e[1]]);
-		});
-	});
+	const enemyPieces = players[side].pieces;
+	for (let idx = 0; idx < selectedPiece.availableMoves.length; idx++) {
+		const enemyMoves = [];
+		let move = selectedPiece.availableMoves[idx];
+		let i = move[0];
+		let j = move[1];
+		let id = selectedPiece.position.split('-');
+		let oldI = parseInt(id[0]);
+		let oldJ = parseInt(id[1]);
+		let allySide = side === 'white' ? 'black' : 'white';
 
-	return enemyAttackCoordinates;
+		if (boardPieces[i][j] === null) {
+			boardPieces[i][j] = selectedPiece;
+		}
+		boardPieces[oldI][oldJ] = null;
+		enemyPieces.forEach((enemyPos) => {
+			boardPieces[enemyPos[0]][enemyPos[1]].kingCheck();
+			enemyMoves.push(
+				...boardPieces[enemyPos[0]][enemyPos[1]].availableMoves
+			);
+		});
+		enemyMoves.forEach((enemyMove) => {
+			let x = enemyMove[0];
+			let y = enemyMove[1];
+			if (selectedPiece.constructor.name === 'King') {
+				if (x === i && y === j) {
+					selectedPiece.availableMoves.splice(idx, 1);
+					idx--;
+				}
+			} else {
+				if (
+					x === kingPositions[allySide][0] &&
+					y === kingPositions[allySide][1]
+				) {
+					selectedPiece.availableMoves.splice(idx, 1);
+					idx--;
+				}
+			}
+		});
+		boardPieces[oldI][oldJ] = selectedPiece;
+		if (boardPieces[i][j] === selectedPiece) boardPieces[i][j] = null;
+	}
 };
 
 const movePieces = (i, j) => {
@@ -278,6 +271,7 @@ const movePieces = (i, j) => {
 					}
 					// Capture Enemy Piece
 					if (boardPieces[i][j] !== null) {
+						console.log(boardPieces[i][j]);
 						chessBoard[i][j].removeChild(boardPieces[i][j].element);
 						//Remove Piece from player object
 						players[boardPieces[i][j].side].pieces.forEach(
@@ -355,17 +349,7 @@ const clickedContainer = (e) => {
 	) {
 		return;
 	}
-	const check = movePieces(i, j);
-	if (check) return;
-	if (selectedPiece === boardPieces[i][j]) {
-		chessBoard.forEach((element) => {
-			element.forEach((el) => {
-				el.classList.remove('availableMove');
-			});
-		});
-		selectedPiece = null;
-		return;
-	}
+	if (movePieces(i, j)) return;
 	if (boardPieces[i][j] !== null) {
 		possibleMoves(i, j);
 	}
