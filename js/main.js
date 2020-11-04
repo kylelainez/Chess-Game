@@ -145,7 +145,7 @@ const possibleMoves = (i, j) => {
 	}
 	selectedPiece = boardPieces[i][j];
 	selectedPiece.checkMoves(i, j);
-	isAllyKingChecked(selectedPiece.side === 'white' ? 'black' : 'white');
+	isAllyKingCheckedOnMove(selectedPiece.side === 'white' ? 'black' : 'white');
 	selectedPiece.availableMoves.forEach((element) => {
 		chessBoard[element[0]][element[1]].classList.add('availableMove');
 	});
@@ -195,7 +195,7 @@ const movesHistory = () => {
 	//TODO: Updates moves history for every turn
 };
 
-const isAllyKingChecked = (side) => {
+const isAllyKingCheckedOnMove = (side) => {
 	// TODO: Check if ally king is checked
 	// ? Maybe Call checkMove of every enemy piece and compare results to current ally king position
 	const enemyPieces = players[side].pieces;
@@ -208,16 +208,19 @@ const isAllyKingChecked = (side) => {
 		let oldI = parseInt(id[0]);
 		let oldJ = parseInt(id[1]);
 		let allySide = side === 'white' ? 'black' : 'white';
-
-		if (boardPieces[i][j] === null) {
-			boardPieces[i][j] = selectedPiece;
+		let tempPiece;
+		if (boardPieces[i][j] !== null) {
+			tempPiece = boardPieces[i][j];
 		}
+		boardPieces[i][j] = selectedPiece;
 		boardPieces[oldI][oldJ] = null;
 		enemyPieces.forEach((enemyPos) => {
-			boardPieces[enemyPos[0]][enemyPos[1]].kingCheck();
-			enemyMoves.push(
-				...boardPieces[enemyPos[0]][enemyPos[1]].availableMoves
-			);
+			if (boardPieces[enemyPos[0]][enemyPos[1]].side === side) {
+				boardPieces[enemyPos[0]][enemyPos[1]].kingCheck();
+				enemyMoves.push(
+					...boardPieces[enemyPos[0]][enemyPos[1]].availableMoves
+				);
+			}
 		});
 		enemyMoves.forEach((enemyMove) => {
 			let x = enemyMove[0];
@@ -238,7 +241,11 @@ const isAllyKingChecked = (side) => {
 			}
 		});
 		boardPieces[oldI][oldJ] = selectedPiece;
-		if (boardPieces[i][j] === selectedPiece) boardPieces[i][j] = null;
+		if (tempPiece) {
+			boardPieces[i][j] = tempPiece;
+		} else {
+			boardPieces[i][j] = null;
+		}
 	}
 };
 
