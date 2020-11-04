@@ -21,8 +21,11 @@ class Pawn extends Piece {
 	constructor(side, position, icon) {
 		super(side, position, icon);
 	}
-	checkMoves(i, j) {
+	checkMoves() {
 		this.availableMoves = [];
+		let id = this.position.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
 		//Check Pawn moves for white
 		if (this.side === 'white') {
 			if (i - 1 >= 0 && boardPieces[i - 1][j] === null) {
@@ -78,7 +81,7 @@ class Pawn extends Piece {
 		}
 	}
 	kingCheck() {
-		let id = this.element.parentElement.id.split('-');
+		let id = this.position.split('-');
 		let i = parseInt(id[0]);
 		let j = parseInt(id[1]);
 		let side = this.side;
@@ -102,8 +105,11 @@ class Rook extends Piece {
 		super(side, position, icon);
 		this.hasMoved = false;
 	}
-	checkMoves(i, j) {
+	checkMoves() {
 		this.availableMoves = [];
+		let id = this.position.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
 		let index = i + 1;
 		//Check Up Moves
 		while (index < 8) {
@@ -166,7 +172,7 @@ class Rook extends Piece {
 		}
 	}
 	kingCheck() {
-		let id = this.element.parentElement.id.split('-');
+		let id = this.position.split('-');
 		let i = parseInt(id[0]);
 		let j = parseInt(id[1]);
 		this.availableMoves = [];
@@ -206,8 +212,11 @@ class Knight extends Piece {
 	constructor(side, position, icon) {
 		super(side, position, icon);
 	}
-	checkMoves(i, j) {
+	checkMoves() {
 		this.availableMoves = [];
+		let id = this.position.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
 		// Lower Right
 		if (i + 2 < 8 && j + 1 < 8) {
 			if (boardPieces[i + 2][j + 1] === null) {
@@ -291,7 +300,7 @@ class Knight extends Piece {
 		}
 	}
 	kingCheck() {
-		let id = this.element.parentElement.id.split('-');
+		let id = this.position.split('-');
 		let i = parseInt(id[0]);
 		let j = parseInt(id[1]);
 		this.availableMoves = [];
@@ -310,8 +319,11 @@ class Bishop extends Piece {
 	constructor(side, position, icon) {
 		super(side, position, icon);
 	}
-	checkMoves(i, j) {
+	checkMoves() {
 		this.availableMoves = [];
+		let id = this.position.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
 		let index1 = i - 1;
 		let index2 = j - 1;
 		// Upper Left
@@ -382,7 +394,7 @@ class Bishop extends Piece {
 		}
 	}
 	kingCheck() {
-		let id = this.element.parentElement.id.split('-');
+		let id = this.position.split('-');
 		let i = parseInt(id[0]);
 		let j = parseInt(id[1]);
 		this.availableMoves = [];
@@ -425,8 +437,12 @@ class Queen extends Piece {
 	constructor(side, position, icon) {
 		super(side, position, icon);
 	}
-	checkMoves(i, j) {
+	checkMoves() {
+		console.log('checkMoves');
 		this.availableMoves = [];
+		let id = this.position.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
 		// Bishop Logic
 		let index1 = i - 1;
 		let index2 = j - 1;
@@ -560,7 +576,8 @@ class Queen extends Piece {
 		}
 	}
 	kingCheck() {
-		let id = this.element.parentElement.id.split('-');
+		console.log('kingCheck');
+		let id = this.position.split('-');
 		let i = parseInt(id[0]);
 		let j = parseInt(id[1]);
 		this.availableMoves = [];
@@ -631,8 +648,11 @@ class King extends Piece {
 		super(side, position, icon);
 		this.hasMoved = false;
 	}
-	checkMoves(i, j) {
+	checkMoves() {
 		this.availableMoves = [];
+		let id = this.position.split('-');
+		let i = parseInt(id[0]);
+		let j = parseInt(id[1]);
 		// Move Up
 		if (i - 1 >= 0) {
 			if (boardPieces[i - 1][j] === null) {
@@ -715,7 +735,7 @@ class King extends Piece {
 		}
 	}
 	kingCheck() {
-		let id = this.element.parentElement.id.split('-');
+		let id = this.position.split('-');
 		let i = parseInt(id[0]);
 		let j = parseInt(id[1]);
 		this.availableMoves = [];

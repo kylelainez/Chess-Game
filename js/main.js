@@ -135,16 +135,57 @@ const possibleMoves = (i, j) => {
 	// TODO: Create an algorithm to check the available moves of the chess piece based on type and current location
 	// ? Maybe create a single function for checking moves or create multiple functions
 	selectedPiece = boardPieces[i][j];
-	let enemySide = selectedPiece.side === 'white' ? 'black' : 'white';
-	const checkEnemy = isKingChecked(enemySide);
-	console.log(checkEnemy);
-	boardPieces[i][j].checkMoves(i, j);
+	selectedPiece.checkMoves(i, j);
 	chessBoard.forEach((element) => {
 		element.forEach((el) => {
 			el.classList.remove('availableMove');
 		});
 	});
-	boardPieces[i][j].availableMoves.forEach((element) => {
+	let tempBoard = [];
+	boardPieces.forEach((elem) => {
+		tempBoard.push([...elem]);
+	});
+	for (let idx = 0; idx < selectedPiece.availableMoves.length; idx++) {
+		let el = selectedPiece.availableMoves[idx];
+		let enemySide = selectedPiece.side === 'white' ? 'black' : 'white';
+
+		boardPieces[el[0]][el[1]] = selectedPiece;
+		boardPieces[i][j] = null;
+		// players[selectedPiece.side].pieces.forEach((elem, index) => {
+		// 	if (elem[0] === i && elem[1] === j)
+		// 		players[selectedPiece.side].pieces[index] = [el[0], el[1]];
+		// });
+
+		const checkEnemy = isKingChecked(enemySide);
+
+		// console.log(checkEnemy);
+		checkEnemy.forEach((elem) => {
+			if (selectedPiece.constructor.name === 'King') {
+				if (el[0] === elem[0] && el[1] === elem[1]) {
+					selectedPiece.availableMoves.splice(idx, 1);
+					--idx;
+				}
+			} else {
+				if (
+					elem[0] === kingPositions[selectedPiece.side][0] &&
+					elem[1] === kingPositions[selectedPiece.side][1]
+				) {
+					// console.log(elem, kingPositions[selectedPiece.side]);
+					// console.log('here');
+					selectedPiece.availableMoves.splice(idx, 1);
+					--idx;
+				}
+			}
+		});
+		// boardPieces[i][j] = selectedPiece;
+		// boardPieces[el[0]][el[1]] = null;
+	}
+	boardPieces = [];
+	tempBoard.forEach((elem) => {
+		boardPieces.push([...elem]);
+	});
+	kingPositions[selectedPiece.side] = [i, j];
+	selectedPiece.availableMoves.forEach((element) => {
 		chessBoard[element[0]][element[1]].classList.add('availableMove');
 	});
 };
@@ -165,7 +206,6 @@ const promotePawn = (i, j, side) => {
 
 const changePawn = (e) => {
 	const el = e.target;
-	console.log(el);
 	let i = currentPawn[0];
 	let j = currentPawn[1];
 	let side = currentPawn[2];
@@ -205,6 +245,7 @@ const isKingChecked = (side) => {
 			enemyAttackCoordinates.push([e[0], e[1]]);
 		});
 	});
+
 	return enemyAttackCoordinates;
 };
 
@@ -218,6 +259,8 @@ const movePieces = (i, j) => {
 			selectedPiece.availableMoves.forEach((el) => {
 				if (i === el[0] && j === el[1]) {
 					let oldPos = selectedPiece.position.split('-');
+					oldPos[0] = parseInt(oldPos[0]);
+					oldPos[1] = parseInt(oldPos[1]);
 					if (
 						selectedPiece.constructor.name === 'King' ||
 						selectedPiece.constructor.name === 'Rook'
@@ -234,11 +277,29 @@ const movePieces = (i, j) => {
 						}
 					}
 					// Capture Enemy Piece
-					if (boardPieces[i][j] !== null)
+					if (boardPieces[i][j] !== null) {
 						chessBoard[i][j].removeChild(boardPieces[i][j].element);
+						//Remove Piece from player object
+						players[boardPieces[i][j].side].pieces.forEach(
+							(el, idx) => {
+								if (el[0] === i && el[1] === j) {
+									players[
+										boardPieces[i][j].side
+									].pieces.splice(idx, 1);
+								}
+							}
+						);
+					}
+
 					boardPieces[i][j] = selectedPiece;
 					boardPieces[oldPos[0]][oldPos[1]] = null;
 					selectedPiece.position = `${i}-${j}`;
+					//Update Pieces When Moved
+					players[selectedPiece.side].pieces.forEach((el, idx) => {
+						if (el[0] === oldPos[0] && el[1] === oldPos[1]) {
+							players[selectedPiece.side].pieces[idx] = [i, j];
+						}
+					});
 					// Pawn Promotion
 					if (selectedPiece.constructor.name === 'Pawn') {
 						if (selectedPiece.side === 'white' && i === 0) {
