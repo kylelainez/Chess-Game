@@ -99,6 +99,9 @@ body {
 .availableMove {
 	background-color: rgba(80, 235, 235, 0.952) !important;
 }
+.checked {
+	background-color: red !important;
+}
 .promote-content {
 	background-color: #fefefe;
 	margin: auto;

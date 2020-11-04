@@ -25,6 +25,7 @@ const rotateBoardButton = document.querySelector('#rotate');
 const promotePawnEl = document.querySelector('#promotePawn');
 const promotePawnSelectionEL = document.querySelector('.promote-content');
 const playerTurn = document.querySelector('#turn');
+const checkedEl = document.querySelector('#checked');
 //* ------------------------------------- Functions -------------------------------------
 
 // Function for initializing State Variables
@@ -146,6 +147,7 @@ const possibleMoves = (i, j) => {
 	selectedPiece = boardPieces[i][j];
 	selectedPiece.checkMoves(i, j);
 	isAllyKingCheckedOnMove(selectedPiece.side === 'white' ? 'black' : 'white');
+	chessBoard[i][j].classList.add('availableMove');
 	selectedPiece.availableMoves.forEach((element) => {
 		chessBoard[element[0]][element[1]].classList.add('availableMove');
 	});
@@ -249,6 +251,24 @@ const isAllyKingCheckedOnMove = (side) => {
 	}
 };
 
+const checkEnemyKing = (side) => {
+	const allyMoves = [];
+	const enemySide = side === 'white' ? 'black' : 'white';
+	players[side].pieces.forEach((piece) => {
+		boardPieces[piece[0]][piece[1]].checkMoves();
+		allyMoves.push(...boardPieces[piece[0]][piece[1]].availableMoves);
+	});
+	players[enemySide].checked = false;
+	allyMoves.forEach((move) => {
+		if (
+			move[0] === kingPositions[enemySide][0] &&
+			move[1] === kingPositions[enemySide][1]
+		) {
+			players[enemySide].checked = true;
+		}
+	});
+};
+
 const movePieces = (i, j) => {
 	// Move Pieces
 	if (selectedPiece !== null) {
@@ -311,6 +331,9 @@ const movePieces = (i, j) => {
 							promotePawn(i, j, selectedPiece.side);
 						}
 					}
+					checkEnemyKing('white');
+					checkEnemyKing('black');
+
 					selectedPiece = null;
 					chessBoard.forEach((element) => {
 						element.forEach((el) => {
@@ -325,6 +348,24 @@ const movePieces = (i, j) => {
 						players.white.turn = true;
 						players.black.turn = false;
 						turn.innerText = "White's Turn";
+					}
+					if (players.black.checked) {
+						chessBoard[kingPositions.black[0]][
+							kingPositions.black[1]
+						].classList.add('checked');
+					} else {
+						chessBoard[kingPositions.black[0]][
+							kingPositions.black[1]
+						].classList.remove('checked');
+					}
+					if (players.white.checked) {
+						chessBoard[kingPositions.white[0]][
+							kingPositions.white[1]
+						].classList.add('checked');
+					} else {
+						chessBoard[kingPositions.white[0]][
+							kingPositions.white[1]
+						].classList.remove('checked');
 					}
 				}
 			});
