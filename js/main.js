@@ -140,7 +140,7 @@ const possibleMoves = (i, j) => {
 			el.classList.remove('availableMove');
 		});
 	});
-	if (selectedPiece === boardPieces[i][j]) {
+	if (selectedPiece !== null && selectedPiece === boardPieces[i][j]) {
 		selectedPiece = null;
 		return;
 	}
@@ -201,6 +201,7 @@ const isAllyKingCheckedOnMove = (side) => {
 	// TODO: Check if ally king is checked
 	// ? Maybe Call checkMove of every enemy piece and compare results to current ally king position
 	const enemyPieces = players[side].pieces;
+	if (selectedPiece.availableMoves.length === 0) return;
 	for (let idx = 0; idx < selectedPiece.availableMoves.length; idx++) {
 		const enemyMoves = [];
 		let move = selectedPiece.availableMoves[idx];
@@ -267,6 +268,16 @@ const checkEnemyKing = (side) => {
 			players[enemySide].checked = true;
 		}
 	});
+	const availMoves = [];
+	if (players[enemySide].checked) {
+		players[enemySide].pieces.forEach((piece) => {
+			possibleMoves(piece[0], piece[1]);
+			availMoves.push(...boardPieces[piece[0]][piece[1]].availableMoves);
+		});
+		if (availMoves.length === 0) {
+			players[enemySide].isCheckedMate = true;
+		}
+	}
 };
 
 const movePieces = (i, j) => {
@@ -298,7 +309,6 @@ const movePieces = (i, j) => {
 					}
 					// Capture Enemy Piece
 					if (boardPieces[i][j] !== null) {
-						console.log(boardPieces[i][j]);
 						chessBoard[i][j].removeChild(boardPieces[i][j].element);
 						//Remove Piece from player object
 						players[boardPieces[i][j].side].pieces.forEach(
@@ -349,23 +359,31 @@ const movePieces = (i, j) => {
 						players.black.turn = false;
 						turn.innerText = "White's Turn";
 					}
+					chessBoard.forEach((el, idx1) => {
+						el.forEach((e, idx2) => {
+							chessBoard[idx1][idx2].classList.remove('checked');
+						});
+					});
 					if (players.black.checked) {
 						chessBoard[kingPositions.black[0]][
 							kingPositions.black[1]
 						].classList.add('checked');
-					} else {
-						chessBoard[kingPositions.black[0]][
-							kingPositions.black[1]
-						].classList.remove('checked');
+						checkedEl.innerText = 'Black Checked!';
 					}
 					if (players.white.checked) {
 						chessBoard[kingPositions.white[0]][
 							kingPositions.white[1]
 						].classList.add('checked');
-					} else {
-						chessBoard[kingPositions.white[0]][
-							kingPositions.white[1]
-						].classList.remove('checked');
+						checkedEl.innerText = 'White Checked!';
+					}
+					if (!players.black.checked && !players.white.checked) {
+						checkedEl.innerText = '';
+					}
+					if (players.white.isCheckedMate) {
+						checkedEl.innerText = 'White loses';
+					}
+					if (players.black.isCheckedMate) {
+						checkedEl.innerText = 'black Loses';
 					}
 				}
 			});

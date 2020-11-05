@@ -14,6 +14,7 @@ class Player {
 		this.checked = false;
 		this.turn = turn;
 		this.pieces = [];
+		this.checkedMate = false;
 	}
 }
 
@@ -86,7 +87,6 @@ class Pawn extends Piece {
 		let j = parseInt(id[1]);
 		let side = this.side;
 		this.availableMoves = [];
-		// console.log(this);
 		if (side === 'white') {
 			if (i - 1 >= 0 && j - 1 >= 0)
 				this.availableMoves.push([i - 1, j - 1]); //Left Attack
