@@ -15,7 +15,6 @@ class Player {
 		this.turn = turn;
 		this.pieces = [];
 		this.checkedMate = false;
-		this.isDraw = false;
 	}
 }
 
