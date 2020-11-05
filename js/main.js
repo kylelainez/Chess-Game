@@ -146,7 +146,7 @@ const possibleMoves = (i, j) => {
 	}
 	selectedPiece = boardPieces[i][j];
 	selectedPiece.checkMoves(i, j);
-	isAllyKingCheckedOnMove(selectedPiece.side === 'white' ? 'black' : 'white');
+	isAllyKingCheckedOnMove();
 	chessBoard[i][j].classList.add('availableMove');
 	selectedPiece.availableMoves.forEach((element) => {
 		chessBoard[element[0]][element[1]].classList.add('availableMove');
@@ -197,20 +197,20 @@ const movesHistory = () => {
 	//TODO: Updates moves history for every turn
 };
 
-const isAllyKingCheckedOnMove = (side) => {
+const isAllyKingCheckedOnMove = () => {
 	// TODO: Check if ally king is checked
 	// ? Maybe Call checkMove of every enemy piece and compare results to current ally king position
-	const enemyPieces = players[side].pieces;
-	if (selectedPiece.availableMoves.length === 0) return;
+	const enemySide = selectedPiece.side === 'white' ? 'black' : 'white';
+	const enemyPieces = players[enemySide].pieces;
+
 	for (let idx = 0; idx < selectedPiece.availableMoves.length; idx++) {
 		const enemyMoves = [];
-		let move = selectedPiece.availableMoves[idx];
-		let i = move[0];
-		let j = move[1];
+		let i = selectedPiece.availableMoves[idx][0];
+		let j = selectedPiece.availableMoves[idx][1];
 		let id = selectedPiece.position.split('-');
 		let oldI = parseInt(id[0]);
 		let oldJ = parseInt(id[1]);
-		let allySide = side === 'white' ? 'black' : 'white';
+		let allySide = selectedPiece.side;
 		let tempPiece;
 		if (boardPieces[i][j] !== null) {
 			tempPiece = boardPieces[i][j];
@@ -218,20 +218,21 @@ const isAllyKingCheckedOnMove = (side) => {
 		boardPieces[i][j] = selectedPiece;
 		boardPieces[oldI][oldJ] = null;
 		enemyPieces.forEach((enemyPos) => {
-			if (boardPieces[enemyPos[0]][enemyPos[1]].side === side) {
+			if (boardPieces[enemyPos[0]][enemyPos[1]].side === enemySide) {
 				boardPieces[enemyPos[0]][enemyPos[1]].kingCheck();
 				enemyMoves.push(
 					...boardPieces[enemyPos[0]][enemyPos[1]].availableMoves
 				);
 			}
 		});
-		enemyMoves.forEach((enemyMove) => {
+		enemyMoves.some((enemyMove) => {
 			let x = enemyMove[0];
 			let y = enemyMove[1];
 			if (selectedPiece.constructor.name === 'King') {
 				if (x === i && y === j) {
 					selectedPiece.availableMoves.splice(idx, 1);
-					idx--;
+					--idx;
+					return true;
 				}
 			} else {
 				if (
@@ -239,7 +240,8 @@ const isAllyKingCheckedOnMove = (side) => {
 					y === kingPositions[allySide][1]
 				) {
 					selectedPiece.availableMoves.splice(idx, 1);
-					idx--;
+					--idx;
+					return true;
 				}
 			}
 		});
@@ -343,7 +345,6 @@ const movePieces = (i, j) => {
 					}
 					checkEnemyKing('white');
 					checkEnemyKing('black');
-
 					selectedPiece = null;
 					chessBoard.forEach((element) => {
 						element.forEach((el) => {
@@ -381,9 +382,11 @@ const movePieces = (i, j) => {
 					}
 					if (players.white.isCheckedMate) {
 						checkedEl.innerText = 'White loses';
+						playerTurn.innerText = 'Black Wins!';
 					}
 					if (players.black.isCheckedMate) {
-						checkedEl.innerText = 'black Loses';
+						checkedEl.innerText = 'Black Loses';
+						playerTurn.innerText = 'White Wins!';
 					}
 				}
 			});
@@ -392,6 +395,36 @@ const movePieces = (i, j) => {
 			return true;
 		}
 	} else {
+		checkEnemyKing('white');
+		checkEnemyKing('black');
+		chessBoard.forEach((el, idx1) => {
+			el.forEach((e, idx2) => {
+				chessBoard[idx1][idx2].classList.remove('checked');
+			});
+		});
+		if (players.black.checked) {
+			chessBoard[kingPositions.black[0]][
+				kingPositions.black[1]
+			].classList.add('checked');
+			checkedEl.innerText = 'Black Checked!';
+		}
+		if (players.white.checked) {
+			chessBoard[kingPositions.white[0]][
+				kingPositions.white[1]
+			].classList.add('checked');
+			checkedEl.innerText = 'White Checked!';
+		}
+		if (!players.black.checked && !players.white.checked) {
+			checkedEl.innerText = '';
+		}
+		if (players.white.isCheckedMate) {
+			checkedEl.innerText = 'White loses';
+			playerTurn.innerText = 'Black Wins!';
+		}
+		if (players.black.isCheckedMate) {
+			checkedEl.innerText = 'Black Loses';
+			playerTurn.innerText = 'White Wins!';
+		}
 		return false;
 	}
 };
