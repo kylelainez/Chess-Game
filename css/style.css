@@ -68,7 +68,6 @@ body {
 .chessBoard {
 	width: 75vh;
 	text-align: center;
-	/* height: 640px; */
 	flex-wrap: wrap;
 	z-index: 0;
 }
@@ -136,18 +135,19 @@ body {
 	width: 200px;
 	height: auto;
 }
-
+#chessBoard {
+	padding: 20px 20px;
+}
 #blackCaptures,
 #whiteCaptures {
 	height: 5vh;
+	/* width: 100%; */
 }
 #blackCaptures img,
 #whiteCaptures img {
 	height: 100%;
 }
-#chessBoard {
-	padding: 20px 20px;
-}
+
 #chessBoard,
 .flex-col {
 	display: none;
@@ -170,7 +170,7 @@ body {
 		height: auto;
 		flex-flow: row;
 		margin: 10px;
-		width: auto;
+		/* width: auto; */
 	}
 	#checked,
 	#turn {

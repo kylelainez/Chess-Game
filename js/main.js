@@ -412,13 +412,18 @@ const movePieces = (i, j) => {
 							kingPositions.black = [i, j];
 						}
 					}
-					if (j === 6 && selectedPiece.constructor.name === 'King') {
+					if (
+						(j === 6 || j === 2) &&
+						selectedPiece.constructor.name === 'King'
+					) {
+						let x = j === 6 ? 7 : 0;
+						let y = j === 6 ? 5 : 3;
 						players[selectedPiece.side].pieces.forEach(
 							(elem, idx) => {
 								if (elem[0] === i && elem[1] === 7) {
 									players[selectedPiece.side].pieces[idx] = [
 										i,
-										5
+										y
 									];
 								}
 								if (elem[0] === i && elem[1] === oldPos[1]) {
@@ -429,33 +434,12 @@ const movePieces = (i, j) => {
 								}
 							}
 						);
-						boardPieces[i][5] = boardPieces[i][7];
-						boardPieces[i][7] = null;
-						boardPieces[i][5].position = `${i}-${5}`;
-						boardPieces[i][5].hasMoved = true;
+						boardPieces[i][y] = boardPieces[i][x];
+						boardPieces[i][x] = null;
+						boardPieces[i][y].position = `${i}-${y}`;
+						boardPieces[i][y].hasMoved = true;
 					}
-					if (j === 2 && selectedPiece.constructor.name === 'King') {
-						players[selectedPiece.side].pieces.forEach(
-							(elem, idx) => {
-								if (elem[0] === i && elem[1] === 0) {
-									players[selectedPiece.side].pieces[idx] = [
-										i,
-										3
-									];
-								}
-								if (elem[0] === i && elem[1] === oldPos[1]) {
-									players[selectedPiece.side].pieces[idx] = [
-										i,
-										j
-									];
-								}
-							}
-						);
-						boardPieces[i][3] = boardPieces[i][0];
-						boardPieces[i][0] = null;
-						boardPieces[i][3].position = `${i}-${3}`;
-						boardPieces[i][3].hasMoved = true;
-					}
+
 					if (boardPieces[i][j] !== null) {
 						// Capture Enemy Piece
 						chessBoard[i][j].removeChild(boardPieces[i][j].element);
@@ -557,7 +541,7 @@ const init = () => {
 	playAgainButton.innerHTML = 'Play Again';
 	chessBoardEl.addEventListener('click', clickedContainer);
 	holder.style.display = 'flex';
-	chessBoardHolder.style.display = 'flex';
+	chessBoardHolder.style.display = 'block';
 	initializeVariables();
 	initializeChessBoard();
 	initializeChessPieces();
