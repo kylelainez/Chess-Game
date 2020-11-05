@@ -47,6 +47,11 @@ const initializeVariables = () => {
 		black: [0, 4]
 	};
 	isDraw = false;
+	chessBoardEl.innerHTML = '';
+	whiteCaptures.innerHTML = '';
+	blackCaptures.innerHTML = '';
+	playerTurn.innerText = "White's Turn";
+	checkedEl.innerText = '';
 };
 
 // Initialize the Chess Board and Render it
@@ -195,6 +200,42 @@ const changePawn = (e) => {
 	promotePawnEl.style.display = 'none';
 };
 
+const winLoseCheck = () => {
+	chessBoard.forEach((el, idx1) => {
+		el.forEach((e, idx2) => {
+			chessBoard[idx1][idx2].classList.remove('checked');
+		});
+	});
+	if (players.black.checked) {
+		chessBoard[kingPositions.black[0]][
+			kingPositions.black[1]
+		].classList.add('checked');
+		checkedEl.innerText = 'Black Checked!';
+	}
+	if (players.white.checked) {
+		chessBoard[kingPositions.white[0]][
+			kingPositions.white[1]
+		].classList.add('checked');
+		checkedEl.innerText = 'White Checked!';
+	}
+	if (!players.black.checked && !players.white.checked) {
+		checkedEl.innerText = '';
+	}
+	if (players.white.isCheckedMate) {
+		checkedEl.innerText = 'Checkmate!';
+		playerTurn.innerText = 'Black Wins!';
+		chessBoardEl.removeEventListener('click', clickedContainer);
+	}
+	if (players.black.isCheckedMate) {
+		checkedEl.innerText = 'Checkmate!';
+		playerTurn.innerText = 'White Wins!';
+		chessBoardEl.removeEventListener('click', clickedContainer);
+	}
+	if (isDraw) {
+		playerTurn.innerHTML = 'Game Draw';
+		checkedEl.innerText = '';
+	}
+};
 const isCastlingAllowed = () => {
 	if (selectedPiece.constructor.name !== 'King' || selectedPiece.hasMoved)
 		return;
@@ -472,38 +513,7 @@ const movePieces = (i, j) => {
 						players.black.turn = false;
 						turn.innerText = "White's Turn";
 					}
-					chessBoard.forEach((el, idx1) => {
-						el.forEach((e, idx2) => {
-							chessBoard[idx1][idx2].classList.remove('checked');
-						});
-					});
-					if (players.black.checked) {
-						chessBoard[kingPositions.black[0]][
-							kingPositions.black[1]
-						].classList.add('checked');
-						checkedEl.innerText = 'Black Checked!';
-					}
-					if (players.white.checked) {
-						chessBoard[kingPositions.white[0]][
-							kingPositions.white[1]
-						].classList.add('checked');
-						checkedEl.innerText = 'White Checked!';
-					}
-					if (!players.black.checked && !players.white.checked) {
-						checkedEl.innerText = '';
-					}
-					if (players.white.isCheckedMate) {
-						checkedEl.innerText = 'Checkmate!';
-						playerTurn.innerText = 'Black Wins!';
-					}
-					if (players.black.isCheckedMate) {
-						checkedEl.innerText = 'Checkmate!';
-						playerTurn.innerText = 'White Wins!';
-					}
-					if (isDraw) {
-						playerTurn.innerHTML = 'Game Draw';
-						checkedEl.innerText = '';
-					}
+					winLoseCheck();
 				}
 			});
 
@@ -540,14 +550,19 @@ const clickedContainer = (e) => {
 	}
 };
 
-initializeVariables();
-initializeChessBoard();
-initializeChessPieces();
+const init = () => {
+	playAgainButton.innerHTML = 'Play Again';
+	chessBoardEl.addEventListener('click', clickedContainer);
+	initializeVariables();
+	initializeChessBoard();
+	initializeChessPieces();
+};
+
 //* ------------------------------------- Event Listeners  -------------------------------------
 
 // TODO: 'click' Event Listner for every chess piece
 // ? Maybe create a Drag and drop function for better user experience
-chessBoardEl.addEventListener('click', clickedContainer);
 
 // TODO: Event Listners for 'Play Again' button and/or 'Rotate Board' button
 // ? Rotate Board button for rotating the board manually for turns, or create a function for automatic rotating
+playAgainButton.addEventListener('click', init);
