@@ -7,6 +7,10 @@
 		<script defer src="js/classes.js"></script>
 		<script defer src="js/main.js"></script>
 		<link rel="stylesheet" href="css/style.css" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+			rel="stylesheet"
+		/>
 	</head>
 	<body class="flex">
 		<div class="header">CHESS</div>
@@ -16,15 +20,18 @@
 					PLAY AGAIN
 				</button>
 				<div id="turn">White's Turn</div>
-				<div id="checked"></div>
+			</div>
+			<div>
+				<div id="blackCaptures"></div>
+				<div class="chessBoard flex"></div>
+				<div id="whiteCaptures"></div>
+			</div>
+
+			<div class="buttons-holder flex">
 				<button id="rotate" class="outside-buttons">
 					ROTATE BOARD
 				</button>
-			</div>
-			<div class="chessBoard flex"></div>
-			<div class="moves-container flex">
-				<div class="moves-header">MOVES HISTORY</div>
-				<div id="moves-list"></div>
+				<div id="checked"></div>
 			</div>
 		</div>
 		<div id="promotePawn" class="promotePawn">

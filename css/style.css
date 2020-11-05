@@ -2,6 +2,7 @@
 	--color-light: #fece9e;
 	--color-dark: #d18b46;
 	font-size: 16px;
+	font-family: 'Roboto', sans-serif;
 }
 
 body {
@@ -11,13 +12,15 @@ body {
 	flex-flow: column;
 	justify-items: flex-start;
 	align-items: center;
+	background-image: url('../bg.jpg');
+	background-size: cover;
 }
-
 .flex {
 	display: flex;
 	justify-content: center;
 }
 .header {
+	font-family: 'Times New Roman', Times, serif;
 	font-size: 5rem;
 	margin: 0;
 	padding: 0;
@@ -51,30 +54,13 @@ body {
 	outline: none;
 }
 
-.moves-container {
-	width: 250px;
-	height: 60vh;
-	flex-flow: column;
-}
-
-.moves-header {
-	font-size: 1.3rem;
-	font-weight: 900;
-	background-color: var(--color-dark);
-	color: var(--color-light);
-	width: 206px;
-	padding: 20px;
-	border: 2px solid var(--color-dark);
-	text-align: center;
-	margin: 0;
-}
-
 .chessBoard {
 	width: 640px;
 	text-align: center;
 	height: 640px;
 	position: relative;
 	flex-wrap: wrap;
+	z-index: 0;
 }
 
 .piecesContainer {
@@ -112,31 +98,33 @@ body {
 	display: flex;
 	justify-content: center;
 }
-.selection {
-	height: 100%;
-}
 .promotePawn {
-	display: none; /* Hidden by default */
-	position: fixed; /* Stay in place */
-	z-index: 1; /* Sit on top */
-	padding-top: 100px; /* Location of the box */
+	display: none;
+	position: fixed;
+	z-index: 1;
+	padding-top: 100px;
 	left: 0;
 	top: 0;
-	width: 100%; /* Full width */
-	height: 100%; /* Full height */
-	overflow: auto; /* Enable scroll if needed */
-	background-color: rgb(0, 0, 0); /* Fallback color */
-	background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-}
-#moves-list {
+	width: 100%;
 	height: 100%;
-	background-color: var(--color-light);
-	width: 206px;
-	padding: 20px;
-	text-align: center;
-	border: 2px solid var(--color-dark);
+	overflow: auto;
+	background-color: rgb(0, 0, 0);
+	background-color: rgba(0, 0, 0, 0.4);
 }
+
 #turn {
 	font-size: 2rem;
 	text-align: center;
+	font-weight: 800;
+}
+
+#checked {
+	font-size: 2rem;
+	text-align: center;
+	font-weight: 800;
+}
+
+#blackCaptures,
+#whiteCaptures {
+	height: 50px;
 }

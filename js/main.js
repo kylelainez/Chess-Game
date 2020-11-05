@@ -27,6 +27,9 @@ const promotePawnEl = document.querySelector('#promotePawn');
 const promotePawnSelectionEL = document.querySelector('.promote-content');
 const playerTurn = document.querySelector('#turn');
 const checkedEl = document.querySelector('#checked');
+const whiteCaptures = document.querySelector('#whiteCaptures');
+const blackCaptures = document.querySelector('#blackCaptures');
+
 //* ------------------------------------- Functions -------------------------------------
 
 // Function for initializing State Variables
@@ -252,10 +255,6 @@ const isCastlingAllowed = () => {
 	}
 };
 
-const movesHistory = () => {
-	//TODO: Updates moves history for every turn
-};
-
 const isAllyKingCheckedOnMove = () => {
 	// TODO: Check if ally king is checked
 	// ? Maybe Call checkMove of every enemy piece and compare results to current ally king position
@@ -389,6 +388,7 @@ const movePieces = (i, j) => {
 						boardPieces[i][5] = boardPieces[i][7];
 						boardPieces[i][7] = null;
 						boardPieces[i][5].position = `${i}-${5}`;
+						boardPieces[i][5].hasMoved = true;
 					}
 					if (j === 2 && selectedPiece.constructor.name === 'King') {
 						players[selectedPiece.side].pieces.forEach(
@@ -410,10 +410,20 @@ const movePieces = (i, j) => {
 						boardPieces[i][3] = boardPieces[i][0];
 						boardPieces[i][0] = null;
 						boardPieces[i][3].position = `${i}-${3}`;
+						boardPieces[i][3].hasMoved = true;
 					}
 					if (boardPieces[i][j] !== null) {
 						// Capture Enemy Piece
 						chessBoard[i][j].removeChild(boardPieces[i][j].element);
+						if (selectedPiece.side === 'white') {
+							whiteCaptures.appendChild(
+								boardPieces[i][j].element
+							);
+						} else {
+							blackCaptures.appendChild(
+								boardPieces[i][j].element
+							);
+						}
 						//Remove Piece from player object
 						players[boardPieces[i][j].side].pieces.forEach(
 							(elem, idx) => {
@@ -483,11 +493,11 @@ const movePieces = (i, j) => {
 						checkedEl.innerText = '';
 					}
 					if (players.white.isCheckedMate) {
-						checkedEl.innerText = 'White loses';
+						checkedEl.innerText = 'Checkmate!';
 						playerTurn.innerText = 'Black Wins!';
 					}
 					if (players.black.isCheckedMate) {
-						checkedEl.innerText = 'Black Loses';
+						checkedEl.innerText = 'Checkmate!';
 						playerTurn.innerText = 'White Wins!';
 					}
 					if (isDraw) {
