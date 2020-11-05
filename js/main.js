@@ -18,6 +18,7 @@ let players;
 let currentPawn;
 let selectedPiece;
 let kingPositions;
+let isDraw;
 //* ------------------------------------- DOM Elements -------------------------------------
 const chessBoardEl = document.querySelector('.chessBoard'); //Chess Board parent for multiple square containers
 const playAgainButton = document.querySelector('#play-again');
@@ -42,6 +43,7 @@ const initializeVariables = () => {
 		white: [7, 4],
 		black: [0, 4]
 	};
+	isDraw = false;
 };
 
 // Initialize the Chess Board and Render it
@@ -189,9 +191,7 @@ const changePawn = (e) => {
 	promotePawnEl.style.display = 'none';
 };
 
-const winLoseChecker = () => {
-	//TODO: Function to check for 'checked' state or 'check mate' state for both kings
-};
+const isCastlingAllowed = () => {};
 
 const movesHistory = () => {
 	//TODO: Updates moves history for every turn
@@ -271,14 +271,14 @@ const checkEnemyKing = (side) => {
 		}
 	});
 	const availMoves = [];
-	if (players[enemySide].checked) {
-		players[enemySide].pieces.forEach((piece) => {
-			possibleMoves(piece[0], piece[1]);
-			availMoves.push(...boardPieces[piece[0]][piece[1]].availableMoves);
-		});
-		if (availMoves.length === 0) {
-			players[enemySide].isCheckedMate = true;
-		}
+	players[enemySide].pieces.forEach((piece) => {
+		possibleMoves(piece[0], piece[1]);
+		availMoves.push(...boardPieces[piece[0]][piece[1]].availableMoves);
+	});
+
+	if (availMoves.length === 0) {
+		if (players[enemySide].checked) players[enemySide].isCheckedMate = true;
+		else isDraw = true;
 	}
 };
 
@@ -388,6 +388,10 @@ const movePieces = (i, j) => {
 						checkedEl.innerText = 'Black Loses';
 						playerTurn.innerText = 'White Wins!';
 					}
+					if (isDraw) {
+						playerTurn.innerHTML = 'Game Draw';
+						checkedEl.innerText = '';
+					}
 				}
 			});
 
@@ -395,36 +399,6 @@ const movePieces = (i, j) => {
 			return true;
 		}
 	} else {
-		checkEnemyKing('white');
-		checkEnemyKing('black');
-		chessBoard.forEach((el, idx1) => {
-			el.forEach((e, idx2) => {
-				chessBoard[idx1][idx2].classList.remove('checked');
-			});
-		});
-		if (players.black.checked) {
-			chessBoard[kingPositions.black[0]][
-				kingPositions.black[1]
-			].classList.add('checked');
-			checkedEl.innerText = 'Black Checked!';
-		}
-		if (players.white.checked) {
-			chessBoard[kingPositions.white[0]][
-				kingPositions.white[1]
-			].classList.add('checked');
-			checkedEl.innerText = 'White Checked!';
-		}
-		if (!players.black.checked && !players.white.checked) {
-			checkedEl.innerText = '';
-		}
-		if (players.white.isCheckedMate) {
-			checkedEl.innerText = 'White loses';
-			playerTurn.innerText = 'Black Wins!';
-		}
-		if (players.black.isCheckedMate) {
-			checkedEl.innerText = 'Black Loses';
-			playerTurn.innerText = 'White Wins!';
-		}
 		return false;
 	}
 };
