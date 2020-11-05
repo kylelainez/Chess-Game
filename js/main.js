@@ -116,6 +116,7 @@ const initializeChessPieces = () => {
 	renderChessPiece();
 };
 
+// Creates new Piece objects
 const getClasses = (piece, side, position) => {
 	let icon = `img/${side}${piece[0].toUpperCase() + piece.slice(1)}.svg`;
 	switch (piece) {
@@ -145,9 +146,8 @@ const renderChessPiece = () => {
 	});
 };
 
+//Generates all selected Piece possible moves
 const possibleMoves = (i, j) => {
-	// TODO: Create an algorithm to check the available moves of the chess piece based on type and current location
-	// ? Maybe create a single function for checking moves or create multiple functions
 	chessBoard.forEach((element) => {
 		element.forEach((el) => {
 			el.classList.remove('availableMove');
@@ -270,7 +270,11 @@ const isEnPassantAllowed = () => {
 };
 
 const isCastlingAllowed = () => {
-	if (selectedPiece.constructor.name !== 'King' || selectedPiece.hasMoved)
+	if (
+		selectedPiece.constructor.name !== 'King' ||
+		selectedPiece.hasMoved ||
+		players[selectedPiece.side].checked
+	)
 		return;
 	let x;
 	let side;
@@ -415,12 +419,12 @@ const checkEnemyKing = (side) => {
 };
 
 const movePieces = (i, j) => {
-	// Move Pieces
 	if (selectedPiece !== null) {
 		if (
 			boardPieces[i][j] === null ||
 			boardPieces[i][j].side !== selectedPiece.side
 		) {
+			//Checks Every Available Moves to equal the current Selected Square
 			selectedPiece.availableMoves.forEach((el) => {
 				if (i === el[0] && j === el[1]) {
 					let oldPos = selectedPiece.position.split('-');
@@ -441,6 +445,7 @@ const movePieces = (i, j) => {
 							kingPositions.black = [i, j];
 						}
 					}
+					// This Code Block implements the movement of Castling
 					if (
 						(j === 6 || j === 2) &&
 						selectedPiece.constructor.name === 'King'
@@ -492,7 +497,7 @@ const movePieces = (i, j) => {
 							}
 						);
 					}
-
+					// Update the boardPieces and Moved Piece property
 					boardPieces[i][j] = selectedPiece;
 					boardPieces[oldPos[0]][oldPos[1]] = null;
 					selectedPiece.position = `${i}-${j}`;
@@ -502,7 +507,7 @@ const movePieces = (i, j) => {
 							players[selectedPiece.side].pieces[idx] = [i, j];
 						}
 					});
-					// Pawn Promotion
+					// Pawn Promotion AND En Passant
 					if (selectedPiece.constructor.name === 'Pawn') {
 						if (selectedPiece.side === 'white' && i === 0) {
 							// Call Promotion Function'
@@ -511,6 +516,7 @@ const movePieces = (i, j) => {
 							//Call Promotion Function
 							promotePawn(i, j, selectedPiece.side);
 						}
+						// This Captures The enemy Pawn from En passant
 						if (Array.isArray(lastMove)) {
 							let oldPos1 = [...lastMove[1]];
 							let newPos = [...lastMove[2]];
@@ -559,7 +565,10 @@ const movePieces = (i, j) => {
 							}
 						}
 					}
+					// Stores the Last Move
 					lastMove = [selectedPiece, [...oldPos], [i, j]];
+
+					// Check If any King is checked or checked mate State
 					checkEnemyKing('white');
 					checkEnemyKing('black');
 					selectedPiece = null;
@@ -634,11 +643,6 @@ const checkResize = () => {
 
 //* ------------------------------------- Event Listeners  -------------------------------------
 
-// TODO: 'click' Event Listner for every chess piece
-// ? Maybe create a Drag and drop function for better user experience
-
-// TODO: Event Listners for 'Play Again' button and/or 'Rotate Board' button
-// ? Rotate Board button for rotating the board manually for turns, or create a function for automatic rotating
 playAgainButton.addEventListener('click', init);
 
 window.addEventListener('resize', checkResize);
