@@ -1,6 +1,7 @@
 :root {
 	--color-light: #fece9e;
 	--color-dark: #d18b46;
+	--max-width: 1200px;
 	font-size: 16px;
 	font-family: 'Roboto', sans-serif;
 	overflow-y: hidden;
@@ -20,6 +21,16 @@ body {
 	display: flex;
 	justify-content: center;
 }
+.flex-col {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	border: 2px solid var(--color-dark);
+	width: 200px;
+	background-color: var(--color-light);
+	padding: 5px;
+}
 .header {
 	font-family: 'Times New Roman', Times, serif;
 	font-weight: 600;
@@ -27,26 +38,23 @@ body {
 	color: var(--color-light);
 	font-size: 5rem;
 	margin: 0;
-	padding: 0;
-	top: 10px;
-	position: absolute;
+	padding-top: 10px;
+	justify-self: center;
+	width: 100vw;
+	text-align: center;
 }
+
 .game {
-	max-width: 1368px;
+	max-width: var(--max-width);
+	/* height: 90vh; */
 	width: 100%;
 	justify-content: space-around;
 	align-items: center;
-	margin: 0;
-	padding: 10px;
+	padding: 0;
 }
 
-.buttons-holder {
-	flex-flow: column;
-	height: 60vh;
-	width: 200px;
-}
 .outside-buttons {
-	width: 100%;
+	width: 200px;
 	padding: 20px;
 	border: 2px solid var(--color-dark);
 	background-color: var(--color-light);
@@ -58,7 +66,7 @@ body {
 }
 
 .chessBoard {
-	width: 80vh;
+	width: 75vh;
 	text-align: center;
 	/* height: 640px; */
 	flex-wrap: wrap;
@@ -123,23 +131,85 @@ body {
 	font-size: 2rem;
 	text-align: center;
 	font-weight: 800;
-	color: var(--color-light);
+	color: var(--color-dark);
 	padding: 20px 0px;
+	width: 200px;
+	height: auto;
 }
 
 #blackCaptures,
 #whiteCaptures {
-	height: 50px;
+	height: 5vh;
+}
+#blackCaptures img,
+#whiteCaptures img {
+	height: 100%;
+}
+#chessBoard {
+	padding: 20px 20px;
+}
+#chessBoard,
+.flex-col {
+	display: none;
 }
 
-@media screen and (max-width: 1100px) {
+@media only screen and (max-width: 1100px) {
+	:root {
+		font-size: 14px;
+		--max-width: 960px;
+	}
 	.game {
 		flex-flow: column;
 	}
-	.buttons-holder {
+	.chessBoard {
+		width: 50vw;
+		text-align: center;
+		flex-wrap: wrap;
+	}
+	.flex-col {
+		height: auto;
+		flex-flow: row;
+		margin: 10px;
+		width: auto;
+	}
+	#checked,
+	#turn {
+		padding: 0;
+		height: auto;
+	}
+
+	.outside-buttons {
+		padding: 15px;
+		font-size: 1.3rem;
+		font-weight: 800;
+		cursor: pointer;
+		outline: none;
+	}
+}
+@media only screen and (max-width: 992px) {
+	.chessBoard {
+		width: 60vw;
+	}
+}
+@media only screen and (max-width: 768px) {
+	:root {
+		font-size: 12px;
+	}
+	.game {
 		flex-flow: column;
-		/* height: 60vh; */
-		height: 200px;
-		width: 200px;
+	}
+	.chessBoard {
+		width: 80vw;
+		text-align: center;
+		flex-wrap: wrap;
+	}
+	#checked,
+	#turn {
+		font-size: 1.6rem;
+	}
+}
+@media only screen and (max-width: 480px) {
+	:root {
+		font-size: 9px;
 	}
 }

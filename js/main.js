@@ -29,7 +29,9 @@ const playerTurn = document.querySelector('#turn');
 const checkedEl = document.querySelector('#checked');
 const whiteCaptures = document.querySelector('#whiteCaptures');
 const blackCaptures = document.querySelector('#blackCaptures');
-
+const gameEl = document.querySelector('.game');
+const holder = document.querySelector('#holder');
+const chessBoardHolder = document.querySelector('#chessBoard');
 //* ------------------------------------- Functions -------------------------------------
 
 // Function for initializing State Variables
@@ -236,6 +238,7 @@ const winLoseCheck = () => {
 		checkedEl.innerText = '';
 	}
 };
+
 const isCastlingAllowed = () => {
 	if (selectedPiece.constructor.name !== 'King' || selectedPiece.hasMoved)
 		return;
@@ -553,9 +556,19 @@ const clickedContainer = (e) => {
 const init = () => {
 	playAgainButton.innerHTML = 'Play Again';
 	chessBoardEl.addEventListener('click', clickedContainer);
+	holder.style.display = 'flex';
+	chessBoardHolder.style.display = 'flex';
 	initializeVariables();
 	initializeChessBoard();
 	initializeChessPieces();
+};
+
+const checkResize = () => {
+	if (window.innerWidth <= 1100) {
+		gameEl.insertBefore(playAgainButton, holder);
+	} else {
+		gameEl.insertBefore(playAgainButton, chessBoardHolder);
+	}
 };
 
 //* ------------------------------------- Event Listeners  -------------------------------------
@@ -566,3 +579,5 @@ const init = () => {
 // TODO: Event Listners for 'Play Again' button and/or 'Rotate Board' button
 // ? Rotate Board button for rotating the board manually for turns, or create a function for automatic rotating
 playAgainButton.addEventListener('click', init);
+
+window.addEventListener('resize', checkResize);
