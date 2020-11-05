@@ -14,7 +14,7 @@ body {
 	flex-flow: column;
 	justify-items: flex-start;
 	align-items: center;
-	background-image: url('../bg.jpg');
+	background-image: url('../img/bg.jpg');
 	background-size: cover;
 }
 .flex {
@@ -94,7 +94,8 @@ body {
 }
 
 .availableMove {
-	background-color: rgba(80, 235, 235, 0.952) !important;
+	background-image: url(../img/fiber_manual_record-24px.svg) !important;
+	background-size: cover;
 }
 .checked {
 	background-color: red !important;

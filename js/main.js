@@ -1,5 +1,4 @@
 //* ------------------------------------- Constants -------------------------------------
-
 const backRow = [
 	'rook',
 	'knight',
@@ -146,6 +145,24 @@ const renderChessPiece = () => {
 	});
 };
 
+const renderAvailableMoves = () => {
+	selectedPiece.availableMoves.forEach((element) => {
+		chessBoard[element[0]][element[1]].classList.add('availableMove');
+	});
+};
+
+const renderTurnMessage = (side) => {
+	if (side === 'white') {
+		players.white.turn = false;
+		players.black.turn = true;
+		turn.innerText = "Black's Turn";
+	} else {
+		players.white.turn = true;
+		players.black.turn = false;
+		turn.innerText = "White's Turn";
+	}
+};
+
 //Generates all selected Piece possible moves
 const possibleMoves = (i, j) => {
 	chessBoard.forEach((element) => {
@@ -163,9 +180,7 @@ const possibleMoves = (i, j) => {
 	chessBoard[i][j].classList.add('availableMove');
 	if (selectedPiece.constructor.name === 'King') isCastlingAllowed();
 	if (selectedPiece.constructor.name === 'Pawn') isEnPassantAllowed();
-	selectedPiece.availableMoves.forEach((element) => {
-		chessBoard[element[0]][element[1]].classList.add('availableMove');
-	});
+	renderAvailableMoves();
 };
 
 const promotePawn = (i, j, side) => {
@@ -531,15 +546,12 @@ const movePieces = (i, j) => {
 								chessBoard[newPos[0]][newPos[1]].removeChild(
 									lastMove[0].element
 								);
-								console.log(newPos);
 								if (selectedPiece.side === 'white') {
 									whiteCaptures.appendChild(
 										boardPieces[newPos[0]][newPos[1]]
 											.element
 									);
-									console.log('here white');
 								} else {
-									console.log('here black');
 									blackCaptures.appendChild(
 										boardPieces[newPos[0]][newPos[1]]
 											.element
@@ -554,7 +566,6 @@ const movePieces = (i, j) => {
 										elem[0] === newPos[0] &&
 										elem[1] === newPos[1]
 									) {
-										console.log('found this');
 										players[
 											boardPieces[newPos[0]][newPos[1]]
 												.side
@@ -577,15 +588,7 @@ const movePieces = (i, j) => {
 							el.classList.remove('availableMove');
 						});
 					});
-					if (boardPieces[i][j].side === 'white') {
-						players.white.turn = false;
-						players.black.turn = true;
-						turn.innerText = "Black's Turn";
-					} else {
-						players.white.turn = true;
-						players.black.turn = false;
-						turn.innerText = "White's Turn";
-					}
+					renderTurnMessage(boardPieces[i][j].side);
 					winLoseCheck();
 				}
 			});
