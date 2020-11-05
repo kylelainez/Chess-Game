@@ -9,8 +9,6 @@ class Piece {
 class Player {
 	constructor(side, turn) {
 		this.side = side;
-		this.eatenPieces = [];
-		this.moves = [];
 		this.checked = false;
 		this.turn = turn;
 		this.pieces = [];

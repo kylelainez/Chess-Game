@@ -19,6 +19,7 @@ let currentPawn;
 let selectedPiece;
 let kingPositions;
 let isDraw;
+let lastMove;
 //* ------------------------------------- DOM Elements -------------------------------------
 const chessBoardEl = document.querySelector('.chessBoard'); //Chess Board parent for multiple square containers
 const playAgainButton = document.querySelector('#play-again');
@@ -161,6 +162,7 @@ const possibleMoves = (i, j) => {
 	isAllyKingCheckedOnMove();
 	chessBoard[i][j].classList.add('availableMove');
 	if (selectedPiece.constructor.name === 'King') isCastlingAllowed();
+	if (selectedPiece.constructor.name === 'Pawn') isEnPassantAllowed();
 	selectedPiece.availableMoves.forEach((element) => {
 		chessBoard[element[0]][element[1]].classList.add('availableMove');
 	});
@@ -236,6 +238,34 @@ const winLoseCheck = () => {
 	if (isDraw) {
 		playerTurn.innerHTML = 'Game Draw';
 		checkedEl.innerText = '';
+	}
+};
+
+const isEnPassantAllowed = () => {
+	if (!Array.isArray(lastMove)) return;
+	if (lastMove[0].constructor.name === 'Pawn') {
+		let oldPos = [...lastMove[1]];
+		let newPos = [...lastMove[2]];
+		let currentPiece = selectedPiece.position.split('-');
+		currentPiece[0] = parseInt(currentPiece[0]);
+		currentPiece[1] = parseInt(currentPiece[1]);
+		if (
+			newPos[0] === currentPiece[0] &&
+			(newPos[1] === currentPiece[1] - 1 ||
+				newPos[1] === currentPiece[1] + 1) &&
+			(newPos[0] - 2 === oldPos[0] || newPos[0] + 2 === oldPos[0])
+		) {
+			if (selectedPiece.side === 'white')
+				selectedPiece.availableMoves.push([
+					currentPiece[0] - 1,
+					newPos[1]
+				]);
+			else
+				selectedPiece.availableMoves.push([
+					currentPiece[0] + 1,
+					newPos[1]
+				]);
+		}
 	}
 };
 
@@ -393,7 +423,6 @@ const movePieces = (i, j) => {
 		) {
 			selectedPiece.availableMoves.forEach((el) => {
 				if (i === el[0] && j === el[1]) {
-					console.log(selectedPiece);
 					let oldPos = selectedPiece.position.split('-');
 					oldPos[0] = parseInt(oldPos[0]);
 					oldPos[1] = parseInt(oldPos[1]);
@@ -482,7 +511,55 @@ const movePieces = (i, j) => {
 							//Call Promotion Function
 							promotePawn(i, j, selectedPiece.side);
 						}
+						if (Array.isArray(lastMove)) {
+							let oldPos1 = [...lastMove[1]];
+							let newPos = [...lastMove[2]];
+							let currentPiece = [...oldPos];
+							if (
+								newPos[0] === currentPiece[0] &&
+								(newPos[1] === currentPiece[1] - 1 ||
+									newPos[1] === currentPiece[1] + 1) &&
+								(newPos[0] - 2 === oldPos1[0] ||
+									newPos[0] + 2 === oldPos1[0])
+							) {
+								chessBoard[newPos[0]][newPos[1]].removeChild(
+									lastMove[0].element
+								);
+								console.log(newPos);
+								if (selectedPiece.side === 'white') {
+									whiteCaptures.appendChild(
+										boardPieces[newPos[0]][newPos[1]]
+											.element
+									);
+									console.log('here white');
+								} else {
+									console.log('here black');
+									blackCaptures.appendChild(
+										boardPieces[newPos[0]][newPos[1]]
+											.element
+									);
+								}
+
+								//Remove Piece from player object
+								players[
+									boardPieces[newPos[0]][newPos[1]].side
+								].pieces.forEach((elem, idx) => {
+									if (
+										elem[0] === newPos[0] &&
+										elem[1] === newPos[1]
+									) {
+										console.log('found this');
+										players[
+											boardPieces[newPos[0]][newPos[1]]
+												.side
+										].pieces.splice(idx, 1);
+									}
+								});
+								boardPieces[newPos[0]][newPos[1]] = null;
+							}
+						}
 					}
+					lastMove = [selectedPiece, [...oldPos], [i, j]];
 					checkEnemyKing('white');
 					checkEnemyKing('black');
 					selectedPiece = null;
