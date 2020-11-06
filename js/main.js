@@ -9,7 +9,7 @@ const backRow = [
 	'knight',
 	'rook'
 ];
-const soundEffect = new Audio('../soundEffects/sound.mp3');
+const soundEffect = new Audio('./soundEffects/sound.mp3');
 //* ------------------------------------- State Variables -------------------------------------
 let boardPieces;
 let chessBoard;
