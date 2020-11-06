@@ -9,7 +9,7 @@ const backRow = [
 	'knight',
 	'rook'
 ];
-
+const soundEffect = new Audio('../soundEffects/sound.mp3');
 //* ------------------------------------- State Variables -------------------------------------
 let boardPieces;
 let chessBoard;
@@ -590,6 +590,7 @@ const movePieces = (i, j) => {
 					});
 					renderTurnMessage(boardPieces[i][j].side);
 					winLoseCheck();
+					soundEffect.play();
 				}
 			});
 
